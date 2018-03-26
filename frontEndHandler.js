@@ -1,4 +1,7 @@
-const Hapi = require('hapi')
+// frontEndHandler.js
+// governs API calls from iOS and other front-ends
+
+const Hapi = require('hapi');
 const http = require("http");
 const fs = require('fs');
 const hostname = 'localhost', host_port = 8000;
@@ -6,7 +9,7 @@ const hostname = 'localhost', host_port = 8000;
 const server = new Hapi.Server({
 	host: hostname,
 	port: host_port
-})
+});
 
 const json_header = {
 	'Content-Type': 'text/json',
@@ -17,11 +20,10 @@ const json_template = './data.json';
 
 function respondToRequest(request, response) {
 	response.writeHead(200, json_header);
-	
-    fs.readFile(json_template, function(err, content) {
-        response.write(content);
-        response.end();
-    });
+	fs.readFile(json_template, function(err, content) {
+		response.write(content);
+		response.end();
+	});
 }
 
 http.createServer(respondToRequest).listen(host_port);
@@ -52,20 +54,20 @@ server.route({
 })
 
 const init = async () => {
-    await server.register({
-        plugin: require('hapi-pino'),
-        options: {
-            prettyPrint: false,
-            logEvents: ['response']
-        }
-    });
-    await server.start();
-    console.log(`Server running at: ${server.info.uri}`);
+	await server.register({
+		plugin: require('hapi-pino'),
+		options: {
+			prettyPrint: false,
+			logEvents: ['response']
+		}
+	});
+	await server.start();
+	console.log(`Server running at: ${server.info.uri}`);
 };
 
 process.on('unhandledRejection', (err) => {
-    console.log(err);
-    process.exit(1);
+	console.log(err);
+	process.exit(1);
 });
 
 init();

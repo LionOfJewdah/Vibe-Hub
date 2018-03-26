@@ -2,16 +2,26 @@
   "name": "vibe_nodejs",
   "version": "1.0.0",
   "description": "Vibe Front End to Server Connection",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "Aya Shimizu and David Silverstone",
+  "contributors": [
+    { "name" : "Aya Shimizu"
+      , "email" : "ashimizu@usc.edu"
+    },
+    { "name" : "David Silverstone"
+      , "email" : "dsilvers@usc.edu"
+    }
+  ],
   "license": "ISC",
   "dependencies": {
     "good": "^8.1.1",
     "good-console": "^7.1.0",
     "hapi": "^17.2.3",
-    "hapi-pino": "^4.0.3"
+    "hapi-pino": "^4.0.3",
+    "mongodb": "^3.0.5",
+    "mqtt": "^3.0.5",
+    "mongoose": "^5.0.11",
   }
 }
