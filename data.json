@@ -1,0 +1,16 @@
+{
+	"bars": [
+        {
+            "name": "The Bungalow",
+            "capacity": "200",
+            "numberOfPeople": "110",
+            "location": "Santa Monica"
+        },
+        {
+            "name": "Tommy's Place",
+            "capacity": "100",
+            "numberOfPeople": "50",
+            "location": "USC Campus"
+        }
+    ]
+}
