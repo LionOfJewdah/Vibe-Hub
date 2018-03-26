@@ -1,0 +1,17 @@
+{
+  "name": "vibe_nodejs",
+  "version": "1.0.0",
+  "description": "Vibe Front End to Server Connection",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Aya Shimizu",
+  "license": "ISC",
+  "dependencies": {
+    "good": "^8.1.1",
+    "good-console": "^7.1.0",
+    "hapi": "^17.2.3",
+    "hapi-pino": "^4.0.3"
+  }
+}
