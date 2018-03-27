@@ -2,17 +2,34 @@
 // Receives data from the raspberry pi over MQTT
 // and enters it into the Mongo database
 
-const Mongo = require("mongodb");
+const mongoose = require('mongoose');
 const mqtt = require('mqtt');
-const hostname = 'localhost', mosquitto_port = 1883, mongo_port = 27017;
-const collection_name = "pi-mqtt";
+const hostname = "localhost", collection_name = "pi-mqtt";
+const mosquitto_port = 1883, mongo_port = 27017;
 
-const mongoClient=Mongo.MongoClient;
-var mongoURI = `mongodb://${hostname}:${mongo_port}/database`;
-//`mongodb://username:password@localhost:${mongo_port}/database`
-var deviceRoot="demo/device/"
-var mongoCollection, mqttClient;
-mongoClient.connect(mongoURI, setupMongoCollection);
+//const Mongo = require('mongodb');
+//const mongoClient = Mongo.MongoClient;
+const username = "", shibboleth = "";
+const deviceRoot = "demo/device/";
+var auth_schema = (username && shibboleth) ? `${username}:${shibboleth}@` : "";
+var mongoURI = `mongodb://${auth_schema}${hostname}:${mongo_port}/database`;
+
+mongoose.connect(mongoURI);
+
+var Venue = require('./models/Venue');
+var Sensor = require('./models/Sensor');
+var Camera = require('./models/Camera');
+
+
+var db = mongoose.connection;
+db.on('error', console.error.bind(console, "connection error:"));
+db.once('open', function() {
+  console.log("We're connected to Mongo via mongoose!");
+});
+
+var mqttClient;
+//var mongoCollection;
+//mongoClient.connect(mongoURI, setupMongoCollection);
 
 function setupMongoCollection(err, db) {
 	if (err) { throw err; }
@@ -37,14 +54,14 @@ function DBUpdate(key, value, collection) {
 
 function InsertValue(data) {
 	return {
-		$push: { 
-			events: { 
-				event: { 
+		$push: {
+			events: {
+				event: {
 					value: data,
 					when: new Date()
 				}
 			}
-		} 
+		}
 	};
 }
 
@@ -54,7 +71,7 @@ function parsePayload(payload) {
 }
 
 function InsertErrorCallback (err,docs) { // will improve
-	if (err) { 
+	if (err) {
 		console.log("Insert fail");
 	}
 };
