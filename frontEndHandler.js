@@ -1,14 +1,16 @@
 // frontEndHandler.js
 // governs API calls from iOS and other front-ends
 
-const Hapi = require('hapi');
+const Hapi = require("hapi");
 const http = require("http");
-const fs = require('fs');
-const hostname = 'localhost', host_port = 8000;
+const fs = require("fs");
+const hostname = "localhost";
+const host_port = 8000;
+const hapi_port = 7000;
 
 const server = new Hapi.Server({
 	host: hostname,
-	port: host_port
+	port: hapi_port
 });
 
 const json_header = {
@@ -16,13 +18,14 @@ const json_header = {
 	'Access-Control-Allow-Origin': '*',
 	'X-Powered-By':'nodejs'
 };
-const json_template = './data.json';
+const json_template = "./data.json";
 
 function respondToRequest(request, response) {
 	response.writeHead(200, json_header);
 	fs.readFile(json_template, function(err, content) {
 		response.write(content);
 		response.end();
+		return JSON.parse(content);
 	});
 }
 

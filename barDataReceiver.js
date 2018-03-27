@@ -9,7 +9,7 @@ const mosquitto_port = 1883;
 const mongo_port = 27017;
 
 const username = "", shibboleth = "";
-const topicPath = "demo/device/";
+const topicPath = "demo/";
 var auth_schema = (username && shibboleth) ? `${username}:${shibboleth}@` : "";
 var mongoURI = `mongodb://${auth_schema}${hostname}:${mongo_port}/database`;
 
@@ -38,15 +38,16 @@ var mqttClient = setupMQTTListener(mosquitto_port, hostname, topicPath, insertQu
 
 function insertQueryData(topic, payload) {
 	const key = topic.replace(topicPath, "");
+	console.log(`[${new Date()}] Received payload "${payload}"`)
 	const sensorType = getSensorType(key);
 	var value = parsePayload(payload);
 	const venueID = value.venueID, cameraID = value.cameraID;
-	const venue = Venue.where('ID').equals(venueID).cast();
+	//const venue = Venue.where('ID').equals(venueID).cast();
 	switch (sensorType) {
 		case SensorType.camera:
 			var cameraData = CameraData.create({
 				number_of_people: value.numberOfPeople,
-				venue: venue,
+				//venue: venue,
 				camera_ID: cameraID
 			}, insertErrorCallback);
 			break;
@@ -65,7 +66,7 @@ function getSensorType(key) { // TODO: parse from data
 
 // will actually parse when payloads become complicated
 function parsePayload(payload) {
-	return payload;
+	return JSON.parse(payload);
 }
 
 function insertErrorCallback (err, docs) { // will improve
