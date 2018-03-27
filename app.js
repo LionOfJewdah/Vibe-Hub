@@ -1,8 +1,9 @@
 require('./frontEndHandler');
 require('./barDataReceiver');
-var mongoose = require('mongoose');
 
 /*
+var mongoose = require('mongoose');
+
 if (isProduction) {
   mongoose.connect(process.env.MONGODB_URI);
 } else {

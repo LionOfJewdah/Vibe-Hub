@@ -9,22 +9,23 @@ const mosquitto_port = 1883;
 const mongo_port = 27017;
 
 const username = "", shibboleth = "";
-const topicPath = "demo/";
+const baseTopic = "demo/";
 var auth_schema = (username && shibboleth) ? `${username}:${shibboleth}@` : "";
 var mongoURI = `mongodb://${auth_schema}${hostname}:${mongo_port}/database`;
+var mongoPathNoCredentials = `mongodb://${hostname}:${mongo_port}/database`;
 
 mongoose.connect(mongoURI);
+
+var db = mongoose.connection;
+db.on('error', console.error.bind(console, "connection error:"));
+db.once('open', function() {
+  console.log(`We're connected to Mongo via mongoose on ${mongoPathNoCredentials}`);
+});
 
 var Venue = require('./models/Venue');
 var Sensor = require('./models/Sensor');
 var Camera = require('./models/Camera');
 var CameraData = require('./models/CameraData');
-
-var db = mongoose.connection;
-db.on('error', console.error.bind(console, "connection error:"));
-db.once('open', function() {
-  console.log("We're connected to Mongo via mongoose!");
-});
 
 function setupMQTTListener(mqtt_port, host, topic_path, callback) {
 	var client = mqtt.connect({host: host, port: mqtt_port});
@@ -34,10 +35,10 @@ function setupMQTTListener(mqtt_port, host, topic_path, callback) {
 	return client;
 }
 
-var mqttClient = setupMQTTListener(mosquitto_port, hostname, topicPath, insertQueryData);
+var mqttClient = setupMQTTListener(mosquitto_port, hostname, baseTopic, insertQueryData);
 
 function insertQueryData(topic, payload) {
-	const key = topic.replace(topicPath, "");
+	const key = topic.replace(baseTopic, "");
 	console.log(`[${new Date()}] Received payload "${payload}"`)
 	const sensorType = getSensorType(key);
 	var value = parsePayload(payload);

@@ -18,10 +18,18 @@ const json_header = {
 	'Access-Control-Allow-Origin': '*',
 	'X-Powered-By':'nodejs'
 };
-const json_template = "./data.json";
+
+const json_template = (function() {
+	const json_URI = "./data.json";
+	return fs.readFileSync(json_URI);
+})();
+const payload_template = JSON.parse(json_template);
+
+console.log(`JSON template is:\n${json_template}.`);
 
 function respondToRequest(request, response) {
 	response.writeHead(200, json_header);
+	let payload = Object.clone({}, json_template);
 	fs.readFile(json_template, function(err, content) {
 		response.write(content);
 		response.end();
@@ -35,7 +43,7 @@ console.log("server initialized");
 server.route({
 	method: 'GET',
 	path: '/',
-	handler: function (request, reply){
+	handler: function (request, reply) {
 		return 'Hello';
 	}
 })
@@ -65,7 +73,7 @@ const init = async () => {
 		}
 	});
 	await server.start();
-	console.log(`Server running at: ${server.info.uri}`);
+	console.log(`Hapi server running at: ${server.info.uri}`);
 };
 
 process.on('unhandledRejection', (err) => {
