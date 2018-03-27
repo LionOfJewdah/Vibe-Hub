@@ -7,6 +7,7 @@ const phonePattern = /\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})/;
 // can replace with ($1) $2-$3 for nice formatting
 
 var VenueSchema = new mongoose.Schema({
+	ID: {type: Number, required: [true, "can't be blank"], index: true},
   name: {type: String, required: [true, "can't be blank"], index: true},
 	location: String,
 	//location: {type: } // TODO: figure out how locations should be stored
