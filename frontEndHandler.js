@@ -37,7 +37,9 @@ var module_handle = {
 function respondToRequest(request, response) {
 	response.writeHead(200, json_header);
 	let payload = Object.clone({}, payload_template);
-	payload.numberOfPeople = module_handle.currentCount;
+	for (var bar in payload.bars) {
+		bar.numberOfPeople = module_handle.currentCount;
+	}
 	response.write(JSON.stringify(payload));
 	response.end();
 }
