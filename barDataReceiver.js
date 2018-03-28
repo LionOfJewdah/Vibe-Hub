@@ -19,7 +19,7 @@ mongoose.connect(mongoURI);
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, "connection error:"));
 db.once('open', function() {
-  console.log(`We're connected to Mongo via mongoose on ${mongoPathNoCredentials}`);
+  console.log(`Connected to Mongo via mongoose on ${mongoPathNoCredentials}`);
 });
 
 var Venue = require('./models/Venue');
@@ -35,24 +35,24 @@ function setupMQTTListener(mqtt_port, host, topic_path, callback) {
 	return client;
 }
 
-var mqttClient = setupMQTTListener(mosquitto_port, hostname, baseTopic, insertQueryData);
-
 function insertQueryData(topic, payload) {
 	const key = topic.replace(baseTopic, "");
 	console.log(`[${new Date()}] Received payload "${payload}"`)
+	var value = JSON.parse(payload);
 	const sensorType = getSensorType(key);
-	var value = parsePayload(payload);
-	const venueID = value.venueID, cameraID = value.cameraID;
-	//const venue = Venue.where('ID').equals(venueID).cast();
+	var venueID = value.venueID,
+	cameraID = value.cameraID;
+	//venueID = Venue.where('ID').equals(venueID).cast();
 	switch (sensorType) {
 		case SensorType.camera:
 			var cameraData = CameraData.create({
 				number_of_people: value.numberOfPeople,
-				//venue: venue,
+				venue_ID: venueID,
 				camera_ID: cameraID
 			}, insertErrorCallback);
 			break;
 	}
+	return value.numberOfPeople;
 }
 
 const SensorType = Object.freeze({
@@ -65,13 +65,19 @@ function getSensorType(key) { // TODO: parse from data
 	return SensorType.camera;
 }
 
-// will actually parse when payloads become complicated
-function parsePayload(payload) {
-	return JSON.parse(payload);
-}
-
 function insertErrorCallback (err, docs) { // will improve
 	if (err) {
 		console.log("Insert fail");
 	}
 };
+
+function InstantiateClient(callback) {
+	function onMessage(topic, payload) {
+		var number = insertQueryData(topic, payload);
+		callback(number);
+	}
+	var mqttClient = setupMQTTListener(mosquitto_port, hostname, baseTopic, onMessage);
+	return mqttClient;
+}
+
+module.exports = InstantiateClient;

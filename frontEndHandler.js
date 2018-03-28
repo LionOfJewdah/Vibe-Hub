@@ -26,15 +26,20 @@ const json_template = (function() {
 const payload_template = JSON.parse(json_template);
 
 console.log(`JSON template is:\n${json_template}.`);
+var module_handle = {
+	currentCount: 4,
+	updateCount: (num) => {
+		this.currentCount = num;
+		console.log(`Updating front end count to ${num}.`);
+	}
+};
 
 function respondToRequest(request, response) {
 	response.writeHead(200, json_header);
-	let payload = Object.clone({}, json_template);
-	fs.readFile(json_template, function(err, content) {
-		response.write(content);
-		response.end();
-		return JSON.parse(content);
-	});
+	let payload = Object.clone({}, payload_template);
+	payload.numberOfPeople = module_handle.currentCount;
+	response.write(JSON.stringify(payload));
+	response.end();
 }
 
 http.createServer(respondToRequest).listen(host_port);
@@ -82,3 +87,5 @@ process.on('unhandledRejection', (err) => {
 });
 
 init();
+
+module.exports = module_handle;

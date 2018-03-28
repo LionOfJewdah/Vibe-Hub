@@ -1,13 +1,4 @@
-require('./frontEndHandler');
-require('./barDataReceiver');
+const app_dispatcher = require('./frontEndHandler');
+const mqtt_module = require('./barDataReceiver');
 
-/*
-var mongoose = require('mongoose');
-
-if (isProduction) {
-  mongoose.connect(process.env.MONGODB_URI);
-} else {
-  mongoose.connect('mongodb://localhost/conduit');
-  mongoose.set('debug', true);
-}
-*/
+const mqtt_receiver = mqtt_module((num) => app_dispatcher.updateCount(num));
