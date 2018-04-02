@@ -5,11 +5,11 @@
 const mongoose = require("mongoose");
 const mqtt = require("mqtt");
 const hostname = "localhost";
-const mosquitto_port = 1883;
+const mqtt_port = 1883;
 const mongo_port = 27017;
 
 const username = "", shibboleth = "";
-const baseTopic = "demo/";
+const baseTopic = "vibe/";
 var auth_schema = (username && shibboleth) ? `${username}:${shibboleth}@` : "";
 var mongoURI = `mongodb://${auth_schema}${hostname}:${mongo_port}/database`;
 var mongoPathNoCredentials = `mongodb://${hostname}:${mongo_port}/database`;
@@ -35,10 +35,9 @@ function setupMQTTListener(mqtt_port, host, topic_path, callback) {
 	return client;
 }
 
-function insertQueryData(topic, payload) {
+function insertSensorData(topic, payload) {
+	var value = parsePayload(payload);
 	const key = topic.replace(baseTopic, "");
-	console.log(`[${new Date()}] Received payload "${payload}"`)
-	var value = JSON.parse(payload);
 	const sensorType = getSensorType(key);
 	var venueID = value.venueID,
 	cameraID = value.cameraID;
@@ -65,6 +64,20 @@ function getSensorType(key) { // TODO: parse from data
 	return SensorType.camera;
 }
 
+function parsePayload(payload) {
+	logPayload(payload);
+	if (payload instanceof String) {
+		return JSON.parse(payload)
+	}
+	return payload;
+}
+
+function logPayload(payload) {
+	const timestamp = new Date();
+	const message = (payload instanceof String) ? payload : JSON.stringify(payload);
+	console.log(`[${timestamp}] Received payload "${message}"`);
+}
+
 function insertErrorCallback (err, docs) { // will improve
 	if (err) {
 		console.log("Insert fail");
@@ -73,10 +86,10 @@ function insertErrorCallback (err, docs) { // will improve
 
 function InstantiateClient(callback) {
 	function onMessage(topic, payload) {
-		var number = insertQueryData(topic, payload);
+		var number = insertSensorData(topic, payload);
 		callback(number);
 	}
-	var mqttClient = setupMQTTListener(mosquitto_port, hostname, baseTopic, onMessage);
+	var mqttClient = setupMQTTListener(mqtt_port, hostname, baseTopic, onMessage);
 	return mqttClient;
 }
 

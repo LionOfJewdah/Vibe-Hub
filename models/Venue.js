@@ -21,6 +21,6 @@ var VenueSchema = new mongoose.Schema({
   category: String, // e.g. bar or club
   tags: [String], // maybe e.g. "gay bar" or things could go here
   sensors: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Sensor' }]
-}, {timestamps: true});
+}, {timestamps: false});
 
 module.exports = mongoose.model('Venue', VenueSchema);
