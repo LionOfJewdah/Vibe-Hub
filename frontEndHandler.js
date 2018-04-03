@@ -2,21 +2,21 @@
 // governs API calls from iOS and other front-ends
 
 const Hapi = require("hapi");
-const http = require("http");
 const fs = require("fs");
 const hostname = "localhost";
-const host_port = 8000;
-const hapi_port = 7000;
+const hapi_port = 8000;
 
 const server = new Hapi.Server({
 	host: hostname,
 	port: hapi_port
 });
 
-const json_header = {
-	'Content-Type': 'text/json',
-	'Access-Control-Allow-Origin': '*',
-	'X-Powered-By':'nodejs'
+const response_headers = {
+	json: {
+		'Content-Type': 'text/json',
+		'Access-Control-Allow-Origin': '*',
+		'X-Powered-By':'nodejs'
+	}
 };
 
 const json_template = (function() {
@@ -25,27 +25,6 @@ const json_template = (function() {
 })();
 const payload_template = JSON.parse(json_template);
 
-console.log(`JSON template is:\n${json_template}.`);
-var module_handle = {
-	currentCount: 4,
-	updateCount: (num) => {
-		this.currentCount = num;
-		console.log(`Updating front end count to ${num}.`);
-	}
-};
-
-function respondToRequest(request, response) {
-	response.writeHead(200, json_header);
-	let payload = Object.clone({}, payload_template);
-	for (var bar in payload.bars) {
-		bar.numberOfPeople = module_handle.currentCount;
-	}
-	response.write(JSON.stringify(payload));
-	response.end();
-}
-
-http.createServer(respondToRequest).listen(host_port);
-console.log("server initialized");
 
 server.route({
 	method: 'GET',
@@ -54,6 +33,7 @@ server.route({
 		return 'Hello';
 	}
 })
+
 
 server.route({
 	method: 'GET',
@@ -70,6 +50,40 @@ server.route({
 		return `You searched for ${request.params.search}.`;
 	}
 })
+
+server.route({
+	method: 'GET',
+	path: '/api/test',
+	handler: function (request, reply) {
+		return {
+			a: 1,
+			b: 2
+		}
+	}
+})
+
+function GetAllTheData(request, reply) {
+	return json_template;
+}
+
+server.route([{
+	method: 'GET',
+	path: '/vibe',
+	handler: GetAllTheData
+}, {
+	method: 'GET',
+	path: '/api/vibe',
+	handler: GetAllTheData
+}])
+
+function QueryBarsAndBest (request, reply) { 
+	//var bars = database.GetBarData();
+	//var bestVibes = database.GetBestVibes();
+	return JSON.stringify({
+		bars: module_handle.bars,
+		bestVibes: module_handle.bestVibes
+	});
+}
 
 const init = async () => {
 	await server.register({
@@ -90,4 +104,4 @@ process.on('unhandledRejection', (err) => {
 
 init();
 
-module.exports = module_handle;
+//module.exports = module_handle;

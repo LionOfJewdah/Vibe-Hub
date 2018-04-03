@@ -8,24 +8,24 @@ const hostname = "localhost";
 const mqtt_port = 1883;
 const mongo_port = 27017;
 
-const username = "", shibboleth = "";
 const baseTopic = "vibe/";
-var auth_schema = (username && shibboleth) ? `${username}:${shibboleth}@` : "";
-var mongoURI = `mongodb://${auth_schema}${hostname}:${mongo_port}/database`;
-var mongoPathNoCredentials = `mongodb://${hostname}:${mongo_port}/database`;
+// const username = "", shibboleth = "";
+// var auth_schema = (username && shibboleth) ? `${username}:${shibboleth}@` : "";
+// var mongoURI = `mongodb://${auth_schema}${hostname}:${mongo_port}/database`;
+// var mongoPathNoCredentials = `mongodb://${hostname}:${mongo_port}/database`;
 
-mongoose.connect(mongoURI);
+// mongoose.connect(mongoURI);
 
-var db = mongoose.connection;
-db.on('error', console.error.bind(console, "connection error:"));
-db.once('open', function() {
-  console.log(`Connected to Mongo via mongoose on ${mongoPathNoCredentials}`);
-});
+// var db = mongoose.connection;
+// db.on('error', console.error.bind(console, "connection error:"));
+// db.once('open', function() {
+//   console.log(`Connected to Mongo via mongoose on ${mongoPathNoCredentials}`);
+// });
 
-var Venue = require('./models/Venue');
-var Sensor = require('./models/Sensor');
-var Camera = require('./models/Camera');
-var CameraData = require('./models/CameraData');
+// var Venue = require('./models/Venue');
+// var Sensor = require('./models/Sensor');
+// var Camera = require('./models/Camera');
+// var CameraData = require('./models/CameraData');
 
 function setupMQTTListener(mqtt_port, host, topic_path, callback) {
 	var client = mqtt.connect({host: host, port: mqtt_port});

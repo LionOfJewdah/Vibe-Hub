@@ -1,16 +1,33 @@
 {
-  "bars": [
-    {
+  "bars": [{
       "name": "The Bungalow",
-      "capacity": "200",
-      "numberOfPeople": "110",
+      "img": "bungalow.jpg",
+      "capacity": 200,
+      "numberOfPeople": 110,
       "location": "Santa Monica"
     },
     {
+      "name": "901 Bar & Grill",
+      "img": "90.jpg",
+      "capacity": 300,
+      "numberOfPeople": 50,
+      "location": "Figueroa"
+    },
+    {
       "name": "Tommy's Place",
-      "capacity": "100",
-      "numberOfPeople": "50",
+      "img": "tommysPlace.jpg",
+      "capacity": 100,
+      "numberOfPeople": 50,
       "location": "USC Campus"
+    }
+  ],
+  "bestVibes": [{
+      "name": "Cliftons Bar",
+      "img": "cliftons@2x.png"
+    },
+    {
+      "name": "Perch",
+      "img": "perch.png"
     }
   ]
 }
