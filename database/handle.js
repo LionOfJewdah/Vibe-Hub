@@ -1,4 +1,5 @@
 // database/handle.js
+// Access point for database inserts, queries and serving
 // Receives data from barDataReceiver.js and sends to frontEndHandler.js
 
 const mongoose = require("mongoose");
@@ -30,14 +31,6 @@ function init(username = "", shibboleth = "") {
 }
 
 var handle = {
-	venues: function () {
-
-	},
-
-	cameraData: function() {
-
-	},
-
 	InsertSensorData: insertSensorData,
 
 	GetVenuesAndBestVibes: getVenuesAndBestVibes,
@@ -48,7 +41,6 @@ var handle = {
 }
 
 module.exports = handle;
-
 
 function insertSensorData(topic, sensorData) {
 	//const key = topic.replace(baseTopic, "");
