@@ -1,5 +1,4 @@
 var mongoose = require('mongoose');
-//var uniqueValidator = require('mongoose-unique-validator');
 
 // US phone numbers
 const phonePattern = /\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})/;
@@ -7,19 +6,18 @@ const phonePattern = /\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})/;
 // can replace with ($1) $2-$3 for nice formatting
 
 var VenueSchema = new mongoose.Schema({
-  ID: {type: Number, required: [true, "can't be blank"], index: true},
+  venue_ID: {type: Number, required: [true, "can't be blank"], index: true, unique: true},
   name: {type: String, required: [true, "can't be blank"], index: true},
   location: String,
-  //location: {type: } // TODO: figure out how locations should be stored
-  phone: {type: String, unique: true, 
+  /* phone: {type: String, unique: true, 
     //required: [true, "can't be blank"], 
     match: [phonePattern, 'is invalid'], 
-  index: true
-  },
+    index: true
+  }, */
   about: String,
-  image: String,
+  img: String,
   category: String, // e.g. bar or club
-  tags: [String], // maybe e.g. "gay bar" or things could go here
+  tags: [String], // e.g. "gay bar" or "Latin"
   sensors: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Sensor' }]
 }, {timestamps: false});
 
