@@ -9,6 +9,7 @@ var VenueSchema = new mongoose.Schema({
   venue_ID: {type: Number, required: [true, "can't be blank"], index: true, unique: true},
   name: {type: String, required: [true, "can't be blank"], index: true},
   location: String,
+  numberOfPeople: Number,
   /* phone: {type: String, unique: true, 
     //required: [true, "can't be blank"], 
     match: [phonePattern, 'is invalid'], 

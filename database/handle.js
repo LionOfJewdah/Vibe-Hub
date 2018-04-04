@@ -20,7 +20,6 @@ function init(username = "", shibboleth = "") {
 	db.on('error', console.error.bind(console, "connection error:"));
 	db.once('open', function() {
 	  console.log(`Connected to Mongo via mongoose on ${mongoPathNoCredentials}`);
-	  getVenuesAndBestVibes();
 	});
 
 	Venue = require('./models/Venue');
@@ -30,34 +29,53 @@ function init(username = "", shibboleth = "") {
 	BestVibes = require('./models/BestVibes');
 }
 
-var handle = {
-	InsertSensorData: insertSensorData,
-
-	GetVenuesAndBestVibes: getVenuesAndBestVibes,
-
-	GetVenues: getVenues,
-
-	GetBestVibes: getBestVibes
-}
-
-module.exports = handle;
-
-function insertSensorData(topic, sensorData) {
-	//const key = topic.replace(baseTopic, "");
-	const sensorType = getSensorType(topic);
-	const clubID = getClubID(topic);
-	var venueID = value.venueID,
-	cameraID = value.cameraID;
-	//venueID = Venue.where('ID').equals(venueID).cast();
+function insertSensorData(sensorData) {
+	const sensorType = SensorType[sensorData.sensorType];
 	switch (sensorType) {
 		case SensorType.camera:
-			return InsertCameraData(sensorData);
+			return _InsertCameraData(sensorData);
 		case SensorType.ultrasonic:
-			return InsertUltrasonicData(sensorData);
+			return _InsertUltrasonicData(sensorData);
 		case SensorType.microphone:
-			return InsertSoundData(sensorData);
+			return _InsertSoundData(sensorData);
 	}
 	return null;
+}
+
+const SensorType = Object.freeze({
+	"camera": 1,
+	"ultrasonic": 2,
+	"microphone": 3,
+});
+
+function _InsertCameraData(sensorData) {
+	const venueID = sensorData.venueID;
+	const numberOfPeople = sensorData.numberOfPeople;
+	var cameraData = CameraData.create({
+		numberOfPeople: numberOfPeople,
+		venue_ID: venueID,
+		camera_ID: sensorData.sensorID
+	}, cameraDataInsertCallback);
+	Venue.where({venue_ID: venueID}).update({numberOfPeople: numberOfPeople}).then(() => {
+		console.log(`venue ${venueID} updated.`);
+	});
+	return sensorData.numberOfPeople;
+
+	function cameraDataInsertCallback(err, docs) {
+		if (err) {
+			console.log("Camera data insert fail");
+		} else {
+			console.log("Inserted camera data");
+		}
+	};
+}
+
+function _InsertUltrasonicData(sensorData) {
+
+}
+
+function _InsertSoundData(sensorData) {
+	
 }
 
 async function getVenues(lim = 10) {
@@ -75,48 +93,24 @@ async function getVenuesAndBestVibes() {
 		var payload = {};
 		payload.bars = await getVenues(lim = 10);
 		payload.bestVibes = await getBestVibes(lim = 5);
-		console.log("Payload:", JSON.stringify(payload));
+		//console.log("Payload:", JSON.stringify(payload));
 		return payload;
 	} catch (rejection) {
 		console.log("Rejected because of:", rejection);
 	}
 }
 
-const SensorType = Object.freeze({
-	"camera": 1,
-	"ultrasonic": 2,
-	"microphone": 3,
-});
+var module_interface = {
+	InsertSensorData: insertSensorData,
 
-function getSensorType(key) { // TODO: parse from data
-	return SensorType.camera;
+	GetVenuesAndBestVibes: getVenuesAndBestVibes,
+
+	GetVenues: getVenues,
+
+	GetBestVibes: getBestVibes
 }
 
-function InsertCameraData(value) {
-	var cameraData = CameraData.create({
-		number_of_people: value.numberOfPeople,
-		venue_ID: value.venueID,
-		camera_ID: value.cameraID
-	}, cameraDataInsertCallback);
-	return value.numberOfPeople;
-
-	function cameraDataInsertCallback (err, docs) { // will improve
-		if (err) {
-			console.log("Camera data insert fail");
-		}
-		else {
-			console.log("Inserted camera data", docs)
-		}
-	};
-}
-
-function InsertUltrasonicData(value) {
-
-}
-
-function InsertSoundData(value) {
-	// TODO
-}
+module.exports = module_interface;
 
 init();
 

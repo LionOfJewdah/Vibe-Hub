@@ -11,33 +11,45 @@ const baseTopic = "vibe/";
 function setupMQTTListener(mqtt_port, host, topic_path, callback) {
 	var client = mqtt.connect({host: host, port: mqtt_port});
 	console.log("MQTT client connected on port", mqtt_port);
-	client.subscribe(topic_path + "+");
+	client.subscribe(topic_path + "#");
 	client.on('message', callback);
 	return client;
 }
 
-function parsePayload(payload) {
-	logPayload(payload);
-	if (payload instanceof String) {
-		return JSON.parse(payload)
+function parsePayload(topic, payload) {
+	if (payload instanceof Buffer) {
+		payload = JSON.parse(payload.toString());
 	}
+	payload = Object.assign(payload, getSensorInfo(topic));
+	logPayload(payload);
 	return payload;
 }
 
-function logPayload(payload) {
+function logPayload(update) {
 	const timestamp = new Date();
-	const message = (payload instanceof String) ? payload : JSON.stringify(payload);
-	console.log(`[${timestamp}] Received payload "${message}"`);
+	console.log(`[${timestamp}] received update ${JSON.stringify(update)}`);
 }
 
 function InstantiateClient(db, callback) {
 	function onMessage(topic, payload) {
-		payload = parsePayload(payload)
-		var result = db.insertSensorData(topic, payload);
+		payload = parsePayload(topic, payload);
+		var result = db.InsertSensorData(payload);
 		callback(result);
 	}
 	var mqttClient = setupMQTTListener(mqtt_port, hostname, baseTopic, onMessage);
 	return mqttClient;
+}
+
+function getSensorInfo(topic) {
+	var venue, sensor;
+	[topic, venue, sensor] = topic.split("/");
+	sensor = sensor.split("_");
+	var sensorInfo = {
+		venueID: parseInt(venue.split("_")[1]),
+		sensorType: sensor[0],
+		sensorID: parseInt(sensor[1])
+	}
+	return sensorInfo;
 }
 
 module.exports = InstantiateClient;

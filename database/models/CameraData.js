@@ -1,7 +1,7 @@
 var mongoose = require('mongoose');
 
 var CameraDataSchema = new mongoose.Schema({
-  number_of_people: Number,
+  numberOfPeople: Number,
   venue_ID: Number,
   // venue_ID: { type: mongoose.Schema.Types.ObjectId, ref: 'Venue' },
   camera_ID: Number // e.g. this is the venue_ID'th sensor at bar/club "venue"
