@@ -21,13 +21,6 @@ function frontEndHandler(database) {
 		}
 	};
 
-	const json_template = (function() {
-		const json_URI = "./data.json";
-		return fs.readFileSync(json_URI);
-	})();
-	const payload_template = JSON.parse(json_template);
-
-
 	server.route({
 		method: 'GET',
 		path: '/',
