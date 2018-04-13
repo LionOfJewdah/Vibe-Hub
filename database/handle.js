@@ -56,9 +56,9 @@ function _InsertCameraData(sensorData) {
 		venue_ID: venueID,
 		camera_ID: sensorData.sensorID
 	}, cameraDataInsertCallback);
-	Venue.where({venue_ID: venueID}).update({numberOfPeople: numberOfPeople}).then(() => {
-		console.log(`venue ${venueID} updated.`);
-	});
+	Venue.where({venue_ID: venueID}).update({numberOfPeople: numberOfPeople}).then(
+		() => console.log(`venue ${venueID} updated.`)
+	);
 	return sensorData.numberOfPeople;
 
 	function cameraDataInsertCallback(err, docs) {
@@ -93,7 +93,6 @@ async function getVenuesAndBestVibes() {
 		var payload = {};
 		payload.bars = await getVenues(lim = 10);
 		payload.bestVibes = await getBestVibes(lim = 5);
-		//console.log("Payload:", JSON.stringify(payload));
 		return payload;
 	} catch (rejection) {
 		console.log("Rejected because of:", rejection);

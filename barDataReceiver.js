@@ -30,11 +30,10 @@ function logPayload(update) {
 	console.log(`[${timestamp}] received update ${JSON.stringify(update)}`);
 }
 
-function InstantiateClient(db, callback) {
+function InstantiateClient(db) {
 	function onMessage(topic, payload) {
 		payload = parsePayload(topic, payload);
 		var result = db.InsertSensorData(payload);
-		callback(result);
 	}
 	var mqttClient = setupMQTTListener(mqtt_port, hostname, baseTopic, onMessage);
 	return mqttClient;
