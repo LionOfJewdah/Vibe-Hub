@@ -70,6 +70,10 @@ function frontEndHandler(database) {
 		return database.GetVenuesAndBestVibes();
 	}
 
+	function GetNumberOfPeople(request, reply) {
+		return database.GetNumberOfPeople();
+	}
+
 	server.route([{
 		method: 'GET',
 		path: '/vibe',
@@ -90,6 +94,12 @@ function frontEndHandler(database) {
 		method: 'GET',
 		path: '/api/bestVibes',
 		handler: GetBestVibes
+	})
+
+	server.route({
+		method: 'GET',
+		path: '/api/venues/current',
+		handler: GetNumberOfPeople
 	})
 
 	const init = async () => {
