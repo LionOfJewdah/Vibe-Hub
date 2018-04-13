@@ -99,6 +99,12 @@ async function getVenuesAndBestVibes() {
 	}
 }
 
+//function to constantly get the new number of people
+async function getNumberOfPeople(lim = 10) {
+	const peopleQuery = Venue.find().limit(lim).select("numberOfPeople name -_id").lean();
+	return peopleQuery.exec();
+}
+
 var module_interface = {
 	InsertSensorData: insertSensorData,
 
@@ -106,7 +112,9 @@ var module_interface = {
 
 	GetVenues: getVenues,
 
-	GetBestVibes: getBestVibes
+	GetBestVibes: getBestVibes,
+
+	GetNumberOfPeople: getNumberOfPeople
 }
 
 module.exports = module_interface;
