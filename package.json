@@ -24,7 +24,8 @@
     "hapi": "^17.2.3",
     "hapi-pino": "^4.0.3",
     "mongoose": "^5.0.11",
-    "mqtt": "^2.17.0"
+    "mqtt": "^2.17.0",
+    "readdir-enhanced": "^2.2.1"
   },
   "devDependencies": {
     "nodemon": "^1.11.0"
