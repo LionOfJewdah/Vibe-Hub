@@ -1,9 +1,7 @@
+#!/usr/bin/env node
 const server = require('./server');
-const frontend_module = require('./frontEndHandler');
-const mqtt_module = require('./barDataReceiver');
-const database = require('./database/handle.js');
-const frontEndRoutes = require('./routes/frontEnd'),
-	backEndRoutes = require('./routes/backEnd');
-
-const mqtt_receiver = mqtt_module(server, database, backEndRoutes);
-const frontend_server = frontend_module(server, database, frontEndRoutes);
+const Frontend_module = require('./frontEndHandler');
+const Bar_end_module = require('./barDataReceiver');
+const database = require('./database/handle');
+const bar_end_receiver = Bar_end_module(server, database, require('./routes/backEnd'));
+const frontend_server = Frontend_module(server, database, require('./routes/frontEnd'));

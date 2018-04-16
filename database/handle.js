@@ -54,7 +54,7 @@ function _InsertCameraData(sensorData) {
 	var cameraData = CameraData.create({
 		numberOfPeople: numberOfPeople,
 		venue_ID: venueID,
-		camera_ID: sensorData.sensorID
+		camera_ID: sensorData.sensorID || 1
 	}, cameraDataInsertCallback);
 	Venue.where({venue_ID: venueID}).update({numberOfPeople: numberOfPeople}).then(
 		() => console.log(`venue ${venueID} updated.`)

@@ -4,16 +4,22 @@
 const Config = require('../config/config');
 const fs = require('fs');
 
-function uploadPictures(request, reply) {
+async function uploadPictures(request, reply) {
 	const venue_ID = request.params.venue_ID,
 		sensorType = request.params.sensorType;
 	const query = request.query;
 	const sensor_ID = query.sensor_ID;
 	let files = request.payload.file;
 	if (!Array.isArray(files)) files = [files];
-	const WriteToUploads = (file, idx) => file.pipe(fs.createWriteStream(
-		Config.UploadFolder + file.hapi.filename
-	));
+	function WriteToUploads (file) {
+		const fname = file.hapi.filename;
+		let dotPosition = (fname.lastIndexOf(".") - 1 >>> 0) + 2;
+		const ext = fname.slice(dotPosition),
+			filename = fname.slice(0, dotPosition - 1).replace(/ /g, '_');
+		file.pipe(fs.createWriteStream(
+			Config.UploadFolder + filename + ` ${venue_ID} ${sensor_ID}.${ext}`
+		));
+	}
 	files.forEach(WriteToUploads);
 
 	const response = {

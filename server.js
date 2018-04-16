@@ -1,5 +1,5 @@
+#!/usr/bin/env node
 'use strict';
-
 const Hapi = require("hapi");
 const Config = require("./config/config");
 
@@ -22,12 +22,6 @@ process.on('unhandledRejection', (err) => {
 	process.exit(1);
 });
 
-/*
-server.events.on('route', (route) => {
-    console.log(`New route added: ${route.path}`);
-});
-*/
 
 init();
-
 module.exports = server;
