@@ -6,13 +6,13 @@ const Config = require('./config');
 const server = Hapi.Server(Config.server);
 
 const init = async () => {
-	await server.register({
+	/*await server.register({
 		plugin: require('hapi-pino'),
 		options: {
 			prettyPrint: true,
 			logEvents: ['response']
 		}
-	});
+	});*/
 	await server.start();
 	console.log(`Hapi server running at: ${server.info.uri}`);
 };

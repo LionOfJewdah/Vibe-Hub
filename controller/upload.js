@@ -36,7 +36,7 @@ const venue_image_config = {
 		output: "stream",
 		parse: true,
 		allow: ["multipart/form-data", "image/*"],
-		maxBytes: 2 * 1024 * 1024
+		maxBytes: 8 * 1024 * 1024
 	}
 };
 
