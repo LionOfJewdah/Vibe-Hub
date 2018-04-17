@@ -1,8 +1,7 @@
 // defines the routing of back-end posting API endpoints from the database object.
 // depends on /database/handle.js and /controller/
-// TODO: a WIP
-
-const { Upload, Detect } = require('../controller');
+'use strict';
+const Upload = require('../controller/upload');
 
 module.exports = function(database) {
 	function RoutePost(path, handler, config) { 

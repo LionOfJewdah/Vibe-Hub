@@ -1,5 +1,7 @@
 // defines the routing of front-end serving API endpoints from the database object.
 // depends on /database/handle.js
+'use strict';
+
 module.exports = function(database) {
 	function RouteGet(path, handler) { 
 		return {method: 'GET', path, handler};	
@@ -10,7 +12,6 @@ module.exports = function(database) {
 		RouteGet('/{name}', (request, reply) => `Hello, ${request.params.name}.`),
 		RouteGet('/api/{search}',
 			(request, reply) => `You searched for ${request.params.search}.`),
-		RouteGet('/api/test', (request, reply) => ({a: 1, b: 2})),
 		RouteGet('/vibe', (request, reply) => database.GetVenuesAndBestVibes()),
 		RouteGet('/api/vibe', (request, reply) => database.GetVenuesAndBestVibes()),
 		RouteGet('/api/venues', (request, reply) => database.GetVenues(lim = 10)),

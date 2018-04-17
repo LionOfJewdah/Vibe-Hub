@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 'use strict';
-const Hapi = require("hapi");
-const Config = require("./config/config");
+const Hapi = require('hapi');
+const Config = require('./config');
 
 const server = Hapi.Server(Config.server);
 
@@ -21,7 +21,6 @@ process.on('unhandledRejection', (err) => {
 	console.log(err);
 	process.exit(1);
 });
-
 
 init();
 module.exports = server;

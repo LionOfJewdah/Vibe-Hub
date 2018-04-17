@@ -8,4 +8,3 @@ function frontEndHandler(server, database, routes) {
 }
 
 module.exports = frontEndHandler;
-

@@ -1,8 +1,9 @@
 // barDataReceiver.js
 // Receives semsor data from the raspberry pi over MQTT
 // and sends it to be entered into the Mongo database
-
+'use strict';
 const mongoose = require("mongoose");
+const Detect = require('./controller/detect');
 const mqtt = require("mqtt");
 const hostname = "localhost";
 const mqtt_port = 1883;

@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+'use strict';
 const server = require('./server');
 const Frontend_module = require('./frontEndHandler');
 const Bar_end_module = require('./barDataReceiver');

@@ -1,9 +1,8 @@
 // database/handle.js
 // Access point for database inserts, queries and serving
-// Receives data from barDataReceiver.js and sends to frontEndHandler.js
+'use strict';
 
-const mongoose = require("mongoose");
-
+const mongoose = require('mongoose');
 var Venue, Sensor, Camera, CameraData, BestVibes;
 
 function init(username = "", shibboleth = "") {
@@ -29,8 +28,14 @@ function init(username = "", shibboleth = "") {
 	BestVibes = require('./models/BestVibes');
 }
 
+const SensorType = Object.freeze({
+	"camera": 1,
+	"ultrasonic": 2,
+	"microphone": 3,
+});
+
 function insertSensorData(sensorData) {
-	const sensorType = SensorType[sensorData.sensorType];
+	const sensorType = SensorType[sensorData.sensorType] || SensorType.camera;
 	switch (sensorType) {
 		case SensorType.camera:
 			return _InsertCameraData(sensorData);
@@ -42,24 +47,27 @@ function insertSensorData(sensorData) {
 	return null;
 }
 
-const SensorType = Object.freeze({
-	"camera": 1,
-	"ultrasonic": 2,
-	"microphone": 3,
-});
+function ApplyCallback(obj, cb) {
+	if (Array.isArray(obj)) {
+		obj.forEach(cb);
+	} else {
+		cb(obj);
+	}
+}
 
 function _InsertCameraData(sensorData) {
-	const venueID = sensorData.venueID;
-	const numberOfPeople = sensorData.numberOfPeople;
-	var cameraData = CameraData.create({
-		numberOfPeople: numberOfPeople,
-		venue_ID: venueID,
-		camera_ID: sensorData.sensorID || 1
-	}, cameraDataInsertCallback);
-	Venue.where({venue_ID: venueID}).update({numberOfPeople: numberOfPeople}).then(
-		() => console.log(`venue ${venueID} updated.`)
-	);
-	return sensorData.numberOfPeople;
+	let cameraData = CameraData.create(sensorData, cameraDataInsertCallback);
+	function updateVenue(data) {
+		const {venue_ID, numberOfPeople} = data;
+		try {
+			return Venue.where({venue_ID: venue_ID}).update({numberOfPeople}).then(
+				() => { console.log(`venue ${venue_ID} updated.`); }
+			).catch(cameraDataInsertCallback);
+		} catch (err) {
+			console.error("fuck");
+		}
+	}
+	ApplyCallback(sensorData, updateVenue);
 
 	function cameraDataInsertCallback(err, docs) {
 		if (err) {
@@ -99,25 +107,18 @@ async function getVenuesAndBestVibes() {
 	}
 }
 
-//function to constantly get the new number of people
 async function getNumberOfPeople(lim = 10) {
 	const peopleQuery = Venue.find().limit(lim).select("numberOfPeople name -_id").lean();
 	return peopleQuery.exec();
 }
 
-var module_interface = {
+module.exports = {
 	InsertSensorData: insertSensorData,
-
+	InsertCameraData: _InsertCameraData,
 	GetVenuesAndBestVibes: getVenuesAndBestVibes,
-
 	GetVenues: getVenues,
-
 	GetBestVibes: getBestVibes,
-
 	GetNumberOfPeople: getNumberOfPeople
 }
 
-module.exports = module_interface;
-
 init();
-

@@ -1,8 +1,10 @@
 // controller/upload.js
 // defines POST API endpoint callbacks
-
-const Config = require('../config/config');
+'use strict';
+const Config = require('../config');
 const fs = require('fs');
+const {Detect} = require('./detect');
+const database = require('../database/handle');
 
 async function uploadPictures(request, reply) {
 	const venue_ID = request.params.venue_ID,
@@ -15,13 +17,13 @@ async function uploadPictures(request, reply) {
 		const fname = file.hapi.filename;
 		let dotPosition = (fname.lastIndexOf(".") - 1 >>> 0) + 2;
 		const ext = fname.slice(dotPosition),
-			filename = fname.slice(0, dotPosition - 1).replace(/ /g, '_');
+			filename = fname.slice(0, dotPosition - 1).replace(/\s/g, '_') || 'dummy';
 		file.pipe(fs.createWriteStream(
 			Config.UploadFolder + filename + ` ${venue_ID} ${sensor_ID}.${ext}`
 		));
 	}
-	files.forEach(WriteToUploads);
-
+	await files.forEach(WriteToUploads);
+	Detect(database.InsertCameraData);
 	const response = {
 		venue_ID,
 		sensorType
