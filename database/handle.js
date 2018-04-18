@@ -49,8 +49,17 @@ function ApplyCallback(obj, cb) {
 	}
 }
 
+function IsNothing(data) {
+	return !data || data.length === 0;
+}
+
 function _InsertCameraData(sensorData) {
+	if (IsNothing(sensorData)) {
+		return;
+	}
 	let cameraData = CameraData.create(sensorData, cameraDataInsertCallback);
+	ApplyCallback(sensorData, updateVenue);
+
 	function updateVenue(data) {
 		const {venue_ID, numberOfPeople} = data;
 		try {
@@ -61,7 +70,6 @@ function _InsertCameraData(sensorData) {
 			console.error("fuck");
 		}
 	}
-	ApplyCallback(sensorData, updateVenue);
 
 	function cameraDataInsertCallback(err, docs) {
 		if (err) {

@@ -9,17 +9,13 @@ const cron = require('node-schedule');
 
 const uploadDir = Config.UploadFolder;
 
-function SecondsToMilliseconds(seconds) {
-	return seconds * 1000;
-}
+const SecondsToMilliseconds = (seconds) => seconds * 1000;
 
 function IfDirectoryExistsDo(directory, callback) {  
 	const ENOENT = -2;
 	fs.stat(directory, (err, stats) => {
 		if (err) {
-			//console.error("Error:", err)
 			if (err.errno == ENOENT) {
-				console.log(`${directory} does not exist.`);
 				return;
 			}
 			throw err;
@@ -33,7 +29,7 @@ function DetectThisMinute(database) {
 	const aMinuteAgo = time.valueOf() - SecondsToMilliseconds(60);
 	const time_dir = MyTime(new Date(aMinuteAgo));
 	const directory = path.resolve(uploadDir, time_dir);
-	IfDirectoryExistsDo(directory, Detect.bind(this, database.InsertCameraData));
+	IfDirectoryExistsDo(directory, Detect.Folder.bind(this, database.InsertCameraData));
 }
 
 function deleteOldFiles(dir, ageInSeconds = 600) {
