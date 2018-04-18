@@ -2,15 +2,18 @@
 // defines POST API endpoint callbacks
 'use strict';
 const Config = require('../config');
-const fs = require('fs');
-const {Detect} = require('./detect');
+const fs = require('fs'), path = require('path');
 const database = require('../database/handle');
+const mkdirp = require('mkdirp');
+const MyTime = require('./util').Time_HH_MM;
 
 async function uploadPictures(request, reply) {
+	const dir = path.resolve(Config.UploadFolder, MyTime());
 	const venue_ID = request.params.venue_ID,
 		sensorType = request.params.sensorType;
 	const query = request.query;
 	const sensor_ID = query.sensor_ID;
+	mkdirp(dir);
 	let files = request.payload.file;
 	if (!Array.isArray(files)) files = [files];
 	function WriteToUploads (file) {
@@ -19,11 +22,10 @@ async function uploadPictures(request, reply) {
 		const ext = fname.slice(dotPosition),
 			filename = fname.slice(0, dotPosition - 1).replace(/\s/g, '_') || 'dummy';
 		file.pipe(fs.createWriteStream(
-			Config.UploadFolder + filename + ` ${venue_ID} ${sensor_ID}.${ext}`
+			path.resolve(dir, filename + ` ${venue_ID} ${sensor_ID}.${ext}`)
 		));
 	}
 	await files.forEach(WriteToUploads);
-	Detect(database.InsertCameraData);
 	const response = {
 		venue_ID,
 		sensorType

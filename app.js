@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 'use strict';
 const server = require('./server');
-const Frontend_module = require('./frontEndHandler');
-const Bar_end_module = require('./barDataReceiver');
+const FrontEndModule = require('./frontEndHandler');
+const BarEndModule = require('./barDataReceiver');
 const database = require('./database/handle');
-const bar_end_receiver = Bar_end_module(server, database, require('./routes/backEnd'));
-const frontend_server = Frontend_module(server, database, require('./routes/frontEnd'));
+const backEndServer  = BarEndModule(server, database, require('./routes/backEnd'));
+const frontEndServer = FrontEndModule(server, database, require('./routes/frontEnd'));

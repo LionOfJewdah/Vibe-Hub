@@ -3,7 +3,7 @@
 'use strict';
 
 const mongoose = require('mongoose');
-var Venue, Sensor, Camera, CameraData, BestVibes;
+const { Venue, Sensor, Camera, CameraData, BestVibes } = require('./models');
 
 function init(username = "", shibboleth = "") {
 	const databaseName = "vibe";
@@ -20,18 +20,12 @@ function init(username = "", shibboleth = "") {
 	db.once('open', function() {
 	  console.log(`Connected to Mongo via mongoose on ${mongoPathNoCredentials}`);
 	});
-
-	Venue = require('./models/Venue');
-	Sensor = require('./models/Sensor');
-	Camera = require('./models/Camera');
-	CameraData = require('./models/CameraData');
-	BestVibes = require('./models/BestVibes');
 }
 
 const SensorType = Object.freeze({
 	"camera": 1,
-	"ultrasonic": 2,
-	"microphone": 3,
+	"microphone": 2,
+	"ultrasonic": 3,
 });
 
 function insertSensorData(sensorData) {
@@ -99,8 +93,8 @@ async function getBestVibes(lim = 5) {
 async function getVenuesAndBestVibes() {
 	try {
 		var payload = {};
-		payload.bars = await getVenues(lim = 10);
-		payload.bestVibes = await getBestVibes(lim = 5);
+		payload.bars = await getVenues(10);
+		payload.bestVibes = await getBestVibes(5);
 		return payload;
 	} catch (rejection) {
 		console.log("Rejected because of:", rejection);

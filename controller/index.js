@@ -1,3 +1,8 @@
+// Controller module interface
 
-exports.Upload = require('./upload');
-exports.Detect = require('./detect');
+'use strict';
+module.exports = {
+	Upload: require('./upload'),
+	Detect: require('./detect'),
+	PeriodicEvents: require('./periodic_events')
+}
