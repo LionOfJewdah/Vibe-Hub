@@ -24,12 +24,13 @@ function IfDirectoryExistsDo(directory, callback) {
 	});
 }
 
-function DetectThisMinute(database) {
-	const time = new Date();
-	const aMinuteAgo = time.valueOf() - SecondsToMilliseconds(60);
+function DetectThisMinute(database, scheduledTime) {
+	scheduledTime = scheduledTime || new Date();
+	const aMinuteAgo = scheduledTime.valueOf() - SecondsToMilliseconds(60);
 	const time_dir = MyTime(new Date(aMinuteAgo));
 	const directory = path.resolve(uploadDir, time_dir);
-	IfDirectoryExistsDo(directory, Detect.Folder.bind(this, database.InsertCameraData));
+	IfDirectoryExistsDo(directory,
+		Detect.Folder.bind(this, database.InsertCameraData));
 }
 
 function deleteOldFiles(dir, ageInSeconds = 600) {
@@ -64,7 +65,8 @@ function Start(database) {
 			SecondsToMilliseconds(300));
 	}, SecondsToMilliseconds(10));
 
-	cron.scheduleJob("0 * * * * *", DetectThisMinute.bind(this, database));
+	let yoloJob = cron.scheduleJob("0 * * * * *",
+		DetectThisMinute.bind(this, database));
 }
 
 module.exports = {
