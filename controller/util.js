@@ -9,7 +9,14 @@ function MyTime(time) {
 	return `${pad2(time.getHours())}_${pad2(time.getMinutes())}`;
 }
 
+async function asyncForEach(array, callback) {
+	for (let index = 0; index < array.length; ++index) {
+		await callback(array[index], index, array);
+	}
+}
+
 module.exports = {
 	Time_HH_MM: MyTime,
-	MyTime: MyTime
+	MyTime: MyTime,
+	asyncForEach
 }
