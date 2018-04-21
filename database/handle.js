@@ -95,7 +95,8 @@ async function getVenues(lim = 10) {
 }
 
 async function getBestVibes(lim = 5) {
-	const bestVibesQuery = BestVibes.find().limit(lim).select("-_id").lean();
+	const bestVibesQuery = BestVibes.find().limit(lim)
+		.select("-_id").lean();
 	return bestVibesQuery.exec();
 }
 
@@ -111,7 +112,8 @@ async function getVenuesAndBestVibes() {
 }
 
 async function getNumberOfPeople(lim = 10) {
-	const peopleQuery = Venue.find().limit(lim).select("numberOfPeople name -_id").lean();
+	const peopleQuery = Venue.find().limit(lim)
+		.select("numberOfPeople name -_id").lean();
 	return peopleQuery.exec();
 }
 

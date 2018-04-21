@@ -35,7 +35,7 @@ async function DetectFolder(Process, path, confidence_threshold = 0.25)
 		const files = await readdir(path, readdir_options);
 		files.forEach((file) => { 
 			yolo_process.stdin.write(`${file}\n`); 
-		})
+		});
 		yolo_process.stdin.end();
 		yolo_process.stdout.on('data', (data) => {
 			const payload = JSON.parse(data);

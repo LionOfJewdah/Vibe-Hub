@@ -40,6 +40,7 @@ function IfDirectoryExistsDo(directory, callback) {
 	fs.stat(directory, (err, stats) => {
 		if (err) {
 			if (err.errno == ENOENT) {
+				console.log(`directory ${directory} does not exist.`)
 				return;
 			}
 			throw err;
