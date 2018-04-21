@@ -19,7 +19,7 @@ function OnYoloExit(code, signal) {
 	}
 }
 
-function DetectFolder(Process, path, confidence_threshold = 0.25)
+async function DetectFolder(Process, path, confidence_threshold = 0.25)
 {
 	const yolo_args = ['detect', yolo_config, weights,
 		'-thresh', confidence_threshold];
@@ -32,13 +32,11 @@ function DetectFolder(Process, path, confidence_threshold = 0.25)
 		basePath: path
 	};
 	try {
-		readdir(path, readdir_options).then(function(files) {
-			files.forEach((file) => { yolo_process.stdin.write(`${file}\n`); });
-		}).catch(function(err) {
-			console.error('Fuck. ' + err.toString())
-		}).then(function() {
-			yolo_process.stdin.end();
-		});
+		const files = await readdir(path, readdir_options);
+		files.forEach((file) => { 
+			yolo_process.stdin.write(`${file}\n`); 
+		})
+		yolo_process.stdin.end();
 		yolo_process.stdout.on('data', (data) => {
 			const payload = JSON.parse(data);
 			Process(payload);

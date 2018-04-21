@@ -23,11 +23,10 @@ async function uploadPictures(request, reply) {
 	});
 	async function WriteToUploads (file) {
 		const fname = file.hapi.filename;
-		let dotPosition = (fname.lastIndexOf(".") - 1 >>> 0) + 2;
-		const ext = fname.slice(dotPosition),
-			filename = fname.slice(0, dotPosition - 1).replace(/\s/g, '_');
+		const ext = path.extname(fname),
+			filename = path.basename(fname).replace(/\s/g, '_');
 		file.pipe(fs.createWriteStream(
-			path.resolve(dir, filename + ` ${venue_ID} ${sensor_ID}.${ext}`)
+			path.resolve(dir, filename + ` ${venue_ID} ${sensor_ID}${ext}`)
 		));
 	}
 }

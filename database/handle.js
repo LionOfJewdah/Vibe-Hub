@@ -60,22 +60,23 @@ function _InsertCameraData(sensorData) {
 	let cameraData = CameraData.create(sensorData, cameraDataInsertCallback);
 	ApplyCallback(sensorData, updateVenue);
 
-	function updateVenue(data) {
+	async function updateVenue(data) {
 		const {venue_ID, numberOfPeople} = data;
 		try {
-			return Venue.where({venue_ID: venue_ID}).update({numberOfPeople}).then(
-				() => { console.log(`venue ${venue_ID} updated.`); }
-			).catch(cameraDataInsertCallback);
+			await Venue.where({venue_ID}).update({numberOfPeople});
+			console.log(`venue ${venue_ID} updated to`,
+				numberOfPeople, "people.");
 		} catch (err) {
-			console.error("fuck");
+			console.error(`Error updating venue ${venue_ID} to`,
+				numberOfPeople, "people.");
 		}
 	}
 
 	function cameraDataInsertCallback(err, docs) {
 		if (err) {
-			console.log("Camera data insert fail");
+			console.log(`[${new Date()}]:`, "Camera data insert fail");
 		} else {
-			console.log("Inserted camera data");
+			console.log(`[${new Date()}]:`, "Inserted camera data");
 		}
 	};
 }
