@@ -6,7 +6,7 @@ const CameraData = require('./CameraData');
 const BestVibes = require('./BestVibes');
 
 module.exports = {
-	Venue, 
+	Venue,
 	Sensor,
 	Camera,
 	CameraData,

@@ -3,8 +3,8 @@
 'use strict';
 
 module.exports = function(database) {
-	function RouteGet(path, handler) { 
-		return {method: 'GET', path, handler};	
+	function RouteGet(path, handler) {
+		return {method: 'GET', path, handler};
 	}
 
 	return [

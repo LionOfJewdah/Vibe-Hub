@@ -85,7 +85,7 @@ function _InsertUltrasonicData(sensorData) {
 }
 
 function _InsertSoundData(sensorData) {
-	
+
 }
 
 async function getVenues(lim = 10) {
