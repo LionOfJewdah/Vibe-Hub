@@ -8,7 +8,7 @@ const cron = require('node-schedule');
 
 const uploadDir = Config.UploadFolder;
 
-class PeriodicEvents{
+class PeriodicEvents {
 	constructor(database) {
 		this.database = database;
 		console.log("PeriodicEvents.start() called.")
