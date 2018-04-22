@@ -7,19 +7,22 @@ const rimraf = require('rimraf');
 const cron = require('node-schedule');
 
 const uploadDir = Config.UploadFolder;
+const { resultDir } = require('./yolo_config');
 
 class PeriodicEvents {
-	constructor(database) {
-		this.database = database;
+	constructor() {
 		console.log("PeriodicEvents.start() called.")
 		setTimeout(() => {
-			deleteOldFiles(uploadDir, 600);
-			setInterval(deleteOldFiles.bind(this, uploadDir, 600),
-				SecondsToMilliseconds(300));
-		}, SecondsToMilliseconds(10));
+			const deleteOldStuff = () => {
+				deleteOldFiles(uploadDir, 600);
+				deleteOldFiles(resultDir, 300);
+			};
+			deleteOldStuff();
+			setInterval(deleteOldStuff, SecondsToMilliseconds(300));
+		}, SecondsToMilliseconds(6));
 
-		this.yoloJob = cron.scheduleJob("0 * * * * *",
-			this.DetectThisMinute.bind(this));
+		/*this.yoloJob = cron.scheduleJob("0 * * * * *",
+			this.DetectThisMinute.bind(this));*/
 	}
 
 	DetectThisMinute(scheduledTime) {
@@ -27,8 +30,7 @@ class PeriodicEvents {
 		const aMinuteAgo = scheduledTime.valueOf() - SecondsToMilliseconds(60);
 		const time_dir = MyTime(new Date(aMinuteAgo));
 		const directory = path.resolve(uploadDir, time_dir);
-		IfDirectoryExistsDo(directory,
-			Detect.Folder.bind(this, this.database.InsertCameraData));
+		IfDirectoryExistsDo(directory, Detect.Folder);
 	}
 
 }
@@ -59,12 +61,11 @@ function deleteOldFiles(dir, ageInSeconds = 600) {
 			return;
 		}
 		function statCallback(err, stat) {
-			var endTime, now;
 			if (err) { return console.error(err); }
-			now = new Date().getTime();
-			endTime = new Date(stat.ctime).getTime()
-						+ SecondsToMilliseconds(ageInSeconds);
-			if (now > endTime) {
+			var now = new Date().getTime(),
+				expiration = new Date(stat.ctime).getTime()
+							+ SecondsToMilliseconds(ageInSeconds);
+			if (expiration < now) {
 				return rimraf(path.join(dir, file), function(err) {
 					if (err) { return console.error(err); }
 					console.log('successfully deleted', file);
@@ -75,8 +76,8 @@ function deleteOldFiles(dir, ageInSeconds = 600) {
 	}
 }
 
-function Start(database) {
-	return new PeriodicEvents(database);
+function Start() {
+	return new PeriodicEvents();
 }
 
 module.exports = {

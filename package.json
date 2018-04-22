@@ -1,6 +1,6 @@
 {
   "name": "vibe_nodejs",
-  "version": "1.1.0",
+  "version": "0.9.0",
   "description": "Vibe Back End",
   "main": "app.js",
   "scripts": {

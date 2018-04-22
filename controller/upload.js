@@ -6,6 +6,7 @@ const fs = require('fs'), path = require('path');
 const database = require('../database/handle');
 const mkdirp = require('mkdirp-promise');
 const { MyTime, asyncForEach } = require('./util');
+const Detect = require('./detect');
 
 async function uploadPictures(request, reply) {
 	const theTime = MyTime();
@@ -25,9 +26,13 @@ async function uploadPictures(request, reply) {
 		const fname = file.hapi.filename;
 		const ext = path.extname(fname),
 			filename = path.basename(fname).replace(/\s/g, '_');
-		file.pipe(fs.createWriteStream(
-			path.resolve(dir, filename + ` ${venue_ID} ${sensor_ID}${ext}`)
-		));
+		const destination = path.resolve(dir,
+			filename + ` ${venue_ID} ${sensor_ID}${ext}`);
+		let output = file.pipe(fs.createWriteStream(destination));
+		output.on('close', () => {
+			console.log(`ok bro I guess I can run yolo on "${destination}" now.`);
+			Detect.Single(destination);
+		})
 	}
 }
 

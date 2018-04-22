@@ -1,76 +1,92 @@
 // controller/detect.js
-// detects the images in a folder
+// wrapper for YOLO on data receipt
+// passes YOLO output to a receiver, usually the database
 'use strict';
+
 const fs = require('fs');
+const path = require('path');
 const readdir = require('readdir-enhanced');
 const child_process = require('child_process');
+const {
+	darknetExec,
+	yolo_args,
+	OnYoloExit,
+	resultDir 
+} = require('./yolo_config');
 
-const home_dir = require('os').homedir(),
-	darknetExec = '/usr/local/bin/darknet',
-	cv_dir = `${home_dir}/computer_vision`,
-	darknet_dir = `${cv_dir}/darknet`,
-	yolo_config = `${darknet_dir}/cfg/yolov3.cfg`,
-	weights = `${darknet_dir}/yolov3.weights`;
+const image_regex = /\.(gif|jpe?g|tiff|png|bmp|webp)$/i;
 
-function OnYoloExit(code, signal) {
-	if (code != 0 || signal != null) {
-		console.log('YOLO process exited with '
-			+ `code ${code} and signal ${signal}.`);
+class YOLO {
+	constructor(handler) {
+		this.dataCallback = handler;
+		this.yolo_process = null;
+		try {
+			this._yolo_init();
+			console.log("OK bro I got YOLO running");
+		} catch (err) {
+			console.error("YOLO error:", err, err.stack);
+			throw err;
+		}
+	}
+
+	_yolo_init() {
+		this.yolo_process = child_process.spawn(darknetExec, yolo_args,
+			{ cwd: resultDir }
+		);
+		this.yolo_process.stdout.on('data', (data) => {
+			const payload = JSON.parse(data);
+			this.dataCallback(payload);
+		});
+		this.yolo_process.on('exit', OnYoloExit);
+	}
+
+	passFileToYolo(filename) {
+		this.yolo_process.stdin.write(`${filename}\n`);
+	}
+
+	async detectFolder(folder) {
+		const readdir_options = {
+			filter: image_regex,
+			basePath: folder
+		};
+		try {
+			const files = await readdir(folder, readdir_options);
+			files.forEach(this.passFileToYolo.bind(this));
+		} catch (err) {
+			console.error(err, err.stack);
+			return err;
+		}
+	}
+
+	async detectSingle(file) {
+		try {
+			this.passFileToYolo(file);
+		} catch (err) {
+			console.error(err, err.stack);
+			return err;
+		}
 	}
 }
 
-async function DetectFolder(Process, path, confidence_threshold = 0.25)
-{
-	const yolo_args = ['detect', yolo_config, weights,
-		'-thresh', confidence_threshold];
-	const yolo_process = child_process.spawn(darknetExec, yolo_args, {
-		cwd: path
-	});
-	const image_regex = /\.(gif|jpe?g|tiff|png|bmp|webp)$/i;
-	const readdir_options = {
-		filter: image_regex,
-		basePath: path
-	};
-	try {
-		const files = await readdir(path, readdir_options);
-		files.forEach((file) => { 
-			yolo_process.stdin.write(`${file}\n`); 
-		});
-		yolo_process.stdin.end();
-		yolo_process.stdout.on('data', (data) => {
-			const payload = JSON.parse(data);
-			Process(payload);
-		});
-		yolo_process.on('exit', OnYoloExit);
-	} catch (err) {
-		console.error(err, err.stack);
-		return err;
-	}
+let myYOLOWrapper = null;
+
+function InitializeYOLO(dataCallback) {
+	myYOLOWrapper = new YOLO(dataCallback);
+	return myYOLOWrapper;
 }
 
-function DetectSingle(Process, file, confidence_threshold = 0.25)
+async function DetectFolder(path)
 {
-	const path = file.substring(0, file.lastIndexOf('/'));
-	const yolo_args = ['detect', yolo_config, weights,
-		'-thresh', confidence_threshold];
-	try {
-		const yolo_process = child_process.spawn(darknetExec, yolo_args, {
-			cwd: path
-		});
-		yolo_process.stdin.write(`${file}\n`);
-		yolo_process.stdin.end();
-		yolo_process.stdout.on('data', (data) => {
-			const payload = JSON.parse(data);
-			Process(payload);
-		});
-		yolo_process.on('exit', OnYoloExit);
-	} catch (err) {
-		console.error(err, err.stack);
-		return err;
-	}
+	return myYOLOWrapper.detectFolder(path);
+}
+
+async function DetectSingle(file)
+{
+	return myYOLOWrapper.detectSingle(file);
 }
 
 module.exports = {
+	Init: InitializeYOLO,
 	Folder: DetectFolder,
 	Single: DetectSingle
 };
