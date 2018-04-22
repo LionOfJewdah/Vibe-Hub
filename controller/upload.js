@@ -30,7 +30,6 @@ async function uploadPictures(request, reply) {
 			filename + ` ${venue_ID} ${sensor_ID}${ext}`);
 		let output = file.pipe(fs.createWriteStream(destination));
 		output.on('close', () => {
-			console.log(`ok bro I guess I can run yolo on "${destination}" now.`);
 			Detect.Single(destination);
 		})
 	}

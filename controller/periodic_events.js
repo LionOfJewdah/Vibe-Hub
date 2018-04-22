@@ -15,7 +15,7 @@ class PeriodicEvents {
 		setTimeout(() => {
 			const deleteOldStuff = () => {
 				deleteOldFiles(uploadDir, 600);
-				deleteOldFiles(resultDir, 300);
+				deleteOldFiles(resultDir, 60);
 			};
 			deleteOldStuff();
 			setInterval(deleteOldStuff, SecondsToMilliseconds(300));
