@@ -1,3 +1,4 @@
+'use strict';
 
 const Venue = require('./Venue');
 const Sensor = require('./Sensor');
