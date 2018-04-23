@@ -9,13 +9,14 @@ module.exports = (database) => {
 			const { bars, bestVibes } = await database.GetVenuesAndBestVibes();
 			let payload = '<html><title="Vibe: Venues and Vibes"/><body>'
 			+ "<h1>Venues:</h1>\n" + "<table>\n"
-			+ "<tr><th>name</th><th>image</th><th>location</th><th>venue ID</th>"
-			+ "<th>capacity</th><th>number of people:</th></tr>\n"
+			+ "<tr><th>Venue</th><th>image</th><th>location</th>"
+			+ "<th>venue ID</th><th>Capacity</th><th>Number of people</th>"
+			+ "<th>Percent capacity</th></tr>\n"
 			bars.forEach((bar) => {
 				payload += '<tr>' + makeTD(bar.name) + makeTD(bar.img)
 					+ makeTD(bar.location) + makeTD(bar.venue_ID)
-					+ makeTD(bar.capacity) + makeTD(bar.numberOfPeople)
-					+ '</tr>\n'
+					+ makeTD(bar.capacity) + makeTD(bar.numberOfPeople) 
+					+ makeTD(percentCap(bar) + '%') + '</tr>\n'
 			});
 			payload += '</table>\n' + '<h1>Vibes:</h1>\n'+ "<table>\n"
 						+ '<tr><th>Venue</th><th>Image</th></tr>\n'
@@ -33,4 +34,8 @@ module.exports = (database) => {
 
 function makeTD(val) {
 	return `<td>${val}</td>`;
+}
+
+function percentCap(bar) {
+	return Math.round(bar.numberOfPeople/bar.capacity*100);
 }
