@@ -8,8 +8,15 @@ module.exports = function(database) {
 		return {method: 'POST', path, handler, config};
 	}
 
+	const imageRoutes = [
+		'/api/post/venue/{venue_ID}/{sensorType}',
+		'/api/post/venue/{venue_ID}/{sensorType}/{sensor_ID}',
+	]
+
 	return [
-		RoutePost('/api/post/venue/{venue_ID}/{sensorType}', Upload.VenuePictures,
+		RoutePost(imageRoutes[0], Upload.VenuePictures,
+			Upload.venueImageConfig),
+		RoutePost(imageRoutes[1], Upload.VenuePictures,
 			Upload.venueImageConfig)
 	];
 }
