@@ -53,6 +53,28 @@ function IsNothing(data) {
 	return !data || data.length === 0;
 }
 
+function RandomElement(array) {
+	const index = Math.floor(Math.random() * (1 + array.length));
+	return array[index];
+}
+
+function SomeoneInLavaLab() {
+	const LavaLab = ['Duffy', 'Durkee', 'Harry', 'Mellina',
+		'Bailey', 'Justin', 'Abha', 'Turtel',
+		'Aya', 'Roddy', 'Kendall', 'Carvalho', 'Pranav',
+		'Elly', 'Ally', 'Nikita', 'Gavin', 'Mac', 'Oliver',
+		'Ayush', 'Nathan', 'Gus', 'Arielle', 'Kevin',
+		'Brian', 'Karime', 'Mai', 'Anant', 'Natalie',
+		'Caroline', 'Zach', 'Jack', 'Fahad', 'Sophia',
+		'Luke'
+	];
+	return RandomElement(LavaLab);
+}
+
+function LoveSomeoneInLavaLab() {
+	console.log(`Ayy lmao I love you ${SomeoneInLavaLab()}.`);
+}
+
 function _InsertCameraData(sensorData) {
 	if (IsNothing(sensorData)) {
 		return;
@@ -64,8 +86,10 @@ function _InsertCameraData(sensorData) {
 		const {venue_ID, numberOfPeople} = data;
 		try {
 			await Venue.where({venue_ID}).update({numberOfPeople});
+			//console.log("Lol guys DSilv's holding up a picture of",
 			console.log(`venue ${venue_ID} updated to`,
 				numberOfPeople, "people.");
+			//LoveSomeoneInLavaLab();
 		} catch (err) {
 			console.error(`Error updating venue ${venue_ID} to`,
 				numberOfPeople, "people.");

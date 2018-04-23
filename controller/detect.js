@@ -14,7 +14,7 @@ const {
 	resultDir 
 } = require('./yolo_config');
 
-const image_regex = /\.(gif|jpe?g|tiff|png|bmp|webp)$/i;
+const { image_regex } = require('./util');
 
 class YOLO {
 	constructor(handler) {
@@ -22,7 +22,6 @@ class YOLO {
 		this.yolo_process = null;
 		try {
 			this._yolo_init();
-			console.log("OK bro I got YOLO running");
 		} catch (err) {
 			console.error("YOLO error:", err, err.stack);
 			throw err;
