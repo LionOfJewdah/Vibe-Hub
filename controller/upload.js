@@ -34,11 +34,7 @@ async function uploadPictures(request, reply) {
 		const destination = path.resolve(dir,
 			filename + ` ${venue_ID} ${sensor_ID}${ext}`);
 		let output = file.pipe(fs.createWriteStream(destination));
-<<<<<<< HEAD
-		output.on('close', () => {
-=======
 		output.on('close', async () => {
->>>>>>> 532730fa21338925191be5816f462651a5d4ae12
 			Detect.Single(destination);
 		})
 	}
