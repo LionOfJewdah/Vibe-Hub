@@ -14,8 +14,8 @@ module.exports = function(database) {
 			(request, reply) => `You searched for ${request.params.search}.`),
 		RouteGet('/vibe', (request, reply) => database.GetVenuesAndBestVibes()),
 		RouteGet('/api/vibe', (request, reply) => database.GetVenuesAndBestVibes()),
-		RouteGet('/api/venues', (request, reply) => database.GetVenues(lim = 10)),
-		RouteGet('/api/bestVibes', (request, reply) => database.GetBestVibes(lim = 5)),
+		RouteGet('/api/venues', (request, reply) => database.GetVenues(10)),
+		RouteGet('/api/bestVibes', (request, reply) => database.GetBestVibes(5)),
 		RouteGet('/api/venues/current', (request, reply) => database.GetNumberOfPeople()),
 	];
 }
