@@ -19,6 +19,7 @@
   "license": "ISC",
   "dependencies": {
     "hapi": "^17.2.3",
+    "inert": "^5.1.0",
     "mkdirp": "^0.5.1",
     "mkdirp-promise": "^5.0.1",
     "mongoose": "^5.0.11",

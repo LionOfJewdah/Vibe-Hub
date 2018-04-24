@@ -55,11 +55,16 @@ class YOLO {
 	}
 
 	async detectSingle(file) {
-		try {
-			this.passFileToYolo(file);
-		} catch (err) {
-			console.error(err, err.stack);
-			return err;
+		var self = this;
+		let myPromise = new Promise(doYolo);
+		return myPromise;
+		function doYolo(resolve, reject) {
+			try {
+				self.passFileToYolo(file);
+				self.yolo_process.stdout.once('data', resolve);
+			} catch (err) {
+				reject(err);
+			}
 		}
 	}
 
@@ -67,7 +72,6 @@ class YOLO {
 		try {
 			const payload = JSON.parse(jsonData);
 			await this.dataCallback(payload);
-			//console.log("Did not crash processing YOLO data")
 		} catch (err) {
 			console.error("Error in parsing JSON from YOLO:",
 				err, jsonData.toString());
@@ -94,6 +98,7 @@ async function DetectSingle(file)
 
 module.exports = {
 	Init: InitializeYOLO,
+	ResultFolder: resultDir,
 	Folder: DetectFolder,
 	Single: DetectSingle
 };

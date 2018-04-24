@@ -2,10 +2,11 @@
 // depends on /database/handle.js
 'use strict';
 
+function RouteGet(path, handler) {
+	return {method: 'GET', path, handler};
+}
+
 module.exports = function(database) {
-	function RouteGet(path, handler) {
-		return {method: 'GET', path, handler};
-	}
 	const WebView = require('../views/webView')(database);
 
 	return [

@@ -3,6 +3,14 @@
 'use strict';
 const Upload = require('../controller/upload');
 
+function RoutePost(path, handler, config) {
+	return { method: 'POST', path, handler, config };
+}
+
+function RouteAny(path, handler, config) {
+	return { method: '*', path, handler, config };
+}
+
 module.exports = function(database) {
 	const imageRoutes = [
 		'/api/post/venue/{venue_ID}/{sensorType}',
@@ -19,14 +27,6 @@ module.exports = function(database) {
 		RouteAny('/api/post/venue/{venue_ID}/capacity/{capacity}',
 			(request, reply) => setVenueCapacity(request, reply)),
 	];
-
-	function RoutePost(path, handler, config) {
-		return {method: 'POST', path, handler, config};
-	}
-
-	function RouteAny(path, handler, config) {
-		return { method: '*', path, handler, config };
-	}
 
 	async function setVenueCapacity(request, reply) {
 		const { venue_ID, capacity } = request.params;

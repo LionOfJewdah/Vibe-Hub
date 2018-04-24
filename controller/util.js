@@ -15,7 +15,7 @@ async function asyncForEach(array, callback) {
 	}
 }
 
-const image_regex = /\.(gif|jpe?g|tiff|png|bmp|webp)$/i;
+const image_regex = /\.(gif|jpe?g|tiff|png|bmp)$/i;
 
 module.exports = {
 	Time_HH_MM: MyTime,

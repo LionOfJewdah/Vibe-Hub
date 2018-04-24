@@ -1,25 +1,26 @@
 // controller/upload.js
 // defines POST API endpoint callbacks
 'use strict';
-const Config = require('../config');
 const fs = require('fs'), path = require('path');
 const mkdirp = require('mkdirp-promise');
-const { MyTime, asyncForEach, image_regex } = require('./util');
+const { MyTime, image_regex } = require('./util');
 const Detect = require('./detect');
+const { UploadFolder } = require('../config');
+const { ResultFolder } = Detect;
 
 async function uploadPictures(request, reply) {
 	const theTime = MyTime();
-	const dir = path.resolve(Config.UploadFolder, theTime);
+	const dir = path.resolve(UploadFolder, theTime);
 	const venue_ID = request.params.venue_ID;
-	const sensor_ID = request.params.sensor_ID || request.query.sensor_ID || 0;
+	const sensor_ID = request.params.sensor_ID || request.query.sensor_ID || 1;
+	let myPayload = {received: false, venue: venue_ID};
 	return mkdirp(dir).then(async function() {
-		let files = request.payload.file;
-		if (!Array.isArray(files)) files = [files];
-		await asyncForEach(files, WriteToUploads);
-		return Promise.resolve({received: true, venue: venue_ID});
+		let { file } = request.payload;
+		if (Array.isArray(file)) file = files[0];
+		return await WriteToUploads(file);
 	}).catch((err) => {
 		console.error(err, err.stack);
-		return Promise.resolve({received: false, venue: venue_ID, error: err});
+		return Promise.resolve(Object.assign(myPayload, {error: err}));
 	});
 	async function WriteToUploads (file) {
 		const fname = file.hapi.filename;
@@ -31,9 +32,22 @@ async function uploadPictures(request, reply) {
 		}
 		const filename = path.basename(fname).replace(/\s/g, '_');
 		const destination = path.resolve(dir,
-			filename + ` ${venue_ID} ${sensor_ID}${ext}`);
+			`${venue_ID} ${sensor_ID}${ext}`);
 		let output = file.pipe(fs.createWriteStream(destination));
-		output.on('close', async () => { Detect.Single(destination); });
+		return new Promise((resolve, reject) => {
+			output.on('close', async () => { 
+				try {
+					await Detect.Single(destination);
+					resolve(reply.file(path.resolve(ResultFolder,
+						`${venue_ID} ${sensor_ID}.jpg`)));
+				} catch (error) { 
+					reject(error);
+				}
+			});
+		})
+
+		
+		return 
 	}
 }
 
