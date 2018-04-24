@@ -5,9 +5,9 @@
 const { PeriodicEvents, Detect } = require('./controller');
 
 function ListenOnHTTP(server, database, routes) {
-	server.route(routes(database));
 	Detect.Init(database.InsertCameraData.bind(database));
 	PeriodicEvents.start();
+	server.route(routes(database));
 }
 
 module.exports = ListenOnHTTP;
