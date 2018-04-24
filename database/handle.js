@@ -53,16 +53,9 @@ function _InsertCameraData(sensorData) {
 			err, err.stack);
 	}
 
-	async function updateVenue(data) {
+	function updateVenue(data) {
 		const {venue_ID, numberOfPeople} = data;
-		try {
-			await Venue.where({venue_ID}).update({numberOfPeople});
-			console.log(`venue ${venue_ID} updated to`,
-				numberOfPeople, "people.");
-		} catch (err) {
-			console.error(`Error updating venue ${venue_ID} to`,
-				numberOfPeople, "people.");
-		}
+		return setVenuePopulation(venue_ID, numberOfPeople);
 	}
 
 	function onCameraDataInsert(err) {
@@ -83,12 +76,27 @@ function _InsertSoundData(sensorData) {
 
 }
 
-async function _setCapacity(venue_ID, capacity) {
+async function setVenuePopulation(venue_ID, numberOfPeople) {
+	try {
+		await Venue.where({venue_ID}).update({numberOfPeople});
+		console.log(`venue ${venue_ID} updated to`,
+			numberOfPeople, "people.");
+		return { venue_ID, numberOfPeople, updated: true };
+	} catch (err) {
+		console.error(`Error updating venue ${venue_ID} to`,
+			numberOfPeople, "people.");
+		return { venue_ID, numberOfPeople, updated: false };
+	}
+}
+
+async function setVenueCapacity(venue_ID, capacity) {
 	try {
 		await Venue.where({venue_ID}).update({capacity});
+		console.log(`venue ${venue_ID} updated to capacity ${capacity}.`);
 		return { venue_ID, capacity, updated: true };
 	} catch (err) {
-		console.log("Rejected because of:", err);
+		console.error(`Error updating venue ${venue_ID} to`,
+			`capacity ${capacity}.`);
 		return { venue_ID, capacity, updated: false };
 	}
 }
@@ -144,7 +152,8 @@ module.exports = {
 	GetVenues: getVenues,
 	GetBestVibes: getBestVibes,
 	GetNumberOfPeople: getNumberOfPeople,
-	SetCapacity: _setCapacity
+	SetVenueCapacity: setVenueCapacity,
+	SetVenuePopulation: setVenuePopulation,
 };
 
 init();

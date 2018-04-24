@@ -14,6 +14,8 @@ module.exports = function(database) {
 			Upload.venueImageConfig),
 		RoutePost(imageRoutes[1], Upload.VenuePictures,
 			Upload.venueImageConfig),
+		RouteAny('/api/post/venue/{venue_ID}/population/{numberOfPeople}',
+			(request, reply) => setVenuePopulation(request, reply)),
 		RouteAny('/api/post/venue/{venue_ID}/capacity/{capacity}',
 			(request, reply) => setVenueCapacity(request, reply)),
 	];
@@ -27,8 +29,12 @@ module.exports = function(database) {
 	}
 
 	async function setVenueCapacity(request, reply) {
-		const venue_ID = request.params.venue_ID,
-			capacity = request.params.capacity;
-		return await database.SetCapacity(venue_ID, capacity);
+		const { venue_ID, capacity } = request.params;
+		return await database.SetVenueCapacity(venue_ID, capacity);
+	}
+
+	async function setVenuePopulation(request, reply) {
+		const { venue_ID, numberOfPeople } = request.params;
+		return await database.SetVenuePopulation(venue_ID, numberOfPeople);
 	}
 }
