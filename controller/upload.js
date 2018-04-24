@@ -3,7 +3,6 @@
 'use strict';
 const Config = require('../config');
 const fs = require('fs'), path = require('path');
-const database = require('../database/handle');
 const mkdirp = require('mkdirp-promise');
 const { MyTime, asyncForEach, image_regex } = require('./util');
 const Detect = require('./detect');
@@ -34,9 +33,7 @@ async function uploadPictures(request, reply) {
 		const destination = path.resolve(dir,
 			filename + ` ${venue_ID} ${sensor_ID}${ext}`);
 		let output = file.pipe(fs.createWriteStream(destination));
-		output.on('close', async () => {
-			Detect.Single(destination);
-		})
+		output.on('close', async () => { Detect.Single(destination); });
 	}
 }
 

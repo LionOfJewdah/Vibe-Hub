@@ -3,7 +3,7 @@
 'use strict';
 const Upload = require('../controller/upload');
 
-module.exports = function(database) {
+module.exports = function() {
 	function RoutePost(path, handler, config) {
 		return {method: 'POST', path, handler, config};
 	}

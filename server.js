@@ -10,7 +10,7 @@ const init = async () => {
 		plugin: require('hapi-pino'),
 		options: {
 			prettyPrint: false,
-			logEvents: ['response']
+			logEvents: ['request-error']
 		}
 	});*/
 	await server.start();

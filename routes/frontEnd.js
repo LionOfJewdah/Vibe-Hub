@@ -20,4 +20,4 @@ module.exports = function(database) {
 		RouteGet('/api/venues/current', (request, reply) => database.GetNumberOfPeople()),
 		RouteGet('/vibe.html', WebView),
 	];
-}
+};

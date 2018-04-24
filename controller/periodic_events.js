@@ -1,21 +1,20 @@
 'use strict';
-const Config = require('../config');
 const MyTime = require('./util').Time_HH_MM;
 const Detect = require('./detect');
 const fs = require('fs'), path = require('path');
+//const cron = require('node-schedule');
 const rimraf = require('rimraf');
-const cron = require('node-schedule');
-
-const uploadDir = Config.UploadFolder;
+const readdir = require('readdir-enhanced');
+const { uploadDir } = require('../config');
 const { resultDir } = require('./yolo_config');
 
 class PeriodicEvents {
 	constructor() {
-		console.log("PeriodicEvents.start() called.")
+		console.log("PeriodicEvents.start() called.");
 		setTimeout(() => {
 			const deleteOldStuff = () => {
 				deleteOldFiles(uploadDir, 600);
-				deleteOldFiles(resultDir, 60);
+				deleteOldFiles(resultDir, 180);
 			};
 			deleteOldStuff();
 			setInterval(deleteOldStuff, SecondsToMilliseconds(300));
@@ -39,10 +38,10 @@ const SecondsToMilliseconds = (seconds) => seconds * 1000;
 
 function IfDirectoryExistsDo(directory, callback) {
 	const ENOENT = -2;
-	fs.stat(directory, (err, stats) => {
+	fs.stat(directory, (err) => {
 		if (err) {
 			if (err.errno == ENOENT) {
-				console.log(`directory ${directory} does not exist.`)
+				console.log(`directory ${directory} does not exist.`);
 				return;
 			}
 			throw err;
@@ -51,15 +50,22 @@ function IfDirectoryExistsDo(directory, callback) {
 	});
 }
 
-function deleteOldFiles(dir, ageInSeconds = 600) {
+async function deleteOldFiles(dir, ageInSeconds = 600) {
 	console.log(`[${new Date()}]:`,
 		"Attempting to delete old files in", dir);
-	fs.readdir(dir, (error, files) => { files.forEach(deleteIfShould); });
+	try {
+		const files = await readdir(dir);
+		files.forEach(deleteIfShould);
+	} catch (err) {
+		console.error("Old file cleanup error:", err, err.stack);
+		throw err;
+	}
 
-	function deleteIfShould(file, index) {
+	async function deleteIfShould(file) {
 		if (file && file[0] == '.') {
 			return;
 		}
+		fs.stat(path.join(dir, file), statCallback);
 		function statCallback(err, stat) {
 			if (err) { return console.error(err); }
 			var now = new Date().getTime(),
@@ -72,7 +78,6 @@ function deleteOldFiles(dir, ageInSeconds = 600) {
 				});
 			}
 		}
-		fs.stat(path.join(dir, file), statCallback);
 	}
 }
 

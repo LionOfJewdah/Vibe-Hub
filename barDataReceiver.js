@@ -4,10 +4,19 @@
 'use strict';
 const { PeriodicEvents, Detect } = require('./controller');
 
+class BackEndListener {
+	constructor(server, database, routes) {
+		this.server = server;
+		this.database = database;
+		this.routes = routes;
+		this.YOLO = Detect.Init(database.InsertCameraData.bind(database));
+		this.periodic_events = PeriodicEvents.start();
+		server.route(routes());
+	}
+}
+
 function ListenOnHTTP(server, database, routes) {
-	Detect.Init(database.InsertCameraData.bind(database));
-	PeriodicEvents.start();
-	server.route(routes(database));
+	return new BackEndListener(server, database, routes);
 }
 
 module.exports = ListenOnHTTP;

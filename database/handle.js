@@ -6,19 +6,19 @@ const mongoose = require('mongoose');
 const { Venue, Sensor, Camera, CameraData, BestVibes } = require('./models');
 
 function init(username = "", shibboleth = "") {
-	const databaseName = "vibe";
-	const hostname = "localhost";
-	const mongo_port = 27017;
-	var auth_schema = (username && shibboleth) ? `${username}:${shibboleth}@` : "";
-	var mongoURI = `mongodb://${auth_schema}${hostname}:${mongo_port}/${databaseName}`;
-	var mongoPathNoCredentials = `mongodb://${hostname}:${mongo_port}/${databaseName}`;
+	const database = "vibe";
+	const host = "localhost";
+	const port = 27017;
+	const auth = (username && shibboleth) ? `${username}:${shibboleth}@` : "";
+	const mongoURI = `mongodb://${auth}${host}:${port}/${database}`;
+	const mongoPathNoCredentials = `mongodb://${host}:${port}/${database}`;
 
 	mongoose.connect(mongoURI);
 
-	var db = mongoose.connection;
+	let db = mongoose.connection;
 	db.on('error', console.error.bind(console, "connection error:"));
 	db.once('open', function() {
-	  console.log(`Connected to Mongo via mongoose on ${mongoPathNoCredentials}`);
+	  console.log('Connected to Mongo on', mongoPathNoCredentials);
 	});
 }
 
@@ -39,18 +39,6 @@ function insertSensorData(sensorData) {
 			return _InsertSoundData(sensorData);
 	}
 	return null;
-}
-
-function ApplyCallback(obj, cb) {
-	if (Array.isArray(obj)) {
-		obj.forEach(cb);
-	} else {
-		cb(obj);
-	}
-}
-
-function IsNothing(data) {
-	return !data || data.length === 0;
 }
 
 function _InsertCameraData(sensorData) {
@@ -95,6 +83,18 @@ function _InsertSoundData(sensorData) {
 
 }
 
+function ApplyCallback(obj, cb) {
+	if (Array.isArray(obj)) {
+		obj.forEach(cb);
+	} else {
+		cb(obj);
+	}
+}
+
+function IsNothing(data) {
+	return !data || data.length === 0;
+}
+
 async function getVenues(lim = 10) {
 	const venueQuery = Venue.find().limit(lim).select("-_id").lean();
 	return venueQuery.exec();
@@ -118,9 +118,13 @@ async function getVenuesAndBestVibes() {
 }
 
 async function getNumberOfPeople(lim = 10) {
-	const peopleQuery = Venue.find().limit(lim)
-		.select("numberOfPeople name -_id").lean();
-	return peopleQuery.exec();
+	try {
+		const peopleQuery = Venue.find().limit(lim)
+			.select("numberOfPeople name -_id").lean();
+		return peopleQuery.exec();
+	} catch (rejection) {
+		console.log("Rejected because of:", rejection);
+	}
 }
 
 module.exports = {
