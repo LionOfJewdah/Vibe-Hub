@@ -3,7 +3,7 @@
 'use strict';
 
 const mongoose = require('mongoose');
-const { Venue, Sensor, Camera, CameraData, BestVibes } = require('./models');
+const { Venue, CameraData, BestVibes } = require('./models');
 
 function init(username = "", shibboleth = "") {
 	const database = "vibe";
@@ -18,7 +18,7 @@ function init(username = "", shibboleth = "") {
 	let db = mongoose.connection;
 	db.on('error', console.error.bind(console, "connection error:"));
 	db.once('open', function() {
-	  console.log('Connected to Mongo on', mongoPathNoCredentials);
+		console.log('Connected to Mongo on', mongoPathNoCredentials);
 	});
 }
 
@@ -65,14 +65,14 @@ function _InsertCameraData(sensorData) {
 		}
 	}
 
-	function onCameraDataInsert(err, docs) {
+	function onCameraDataInsert(err) {
 		if (err) {
 			console.error(`[${new Date()}]:`, "Camera data insert fail:",
 				err, err.stack);
 		} else {
 			console.log(`[${new Date()}]:`, "Inserted camera data");
 		}
-	};
+	}
 }
 
 function _InsertUltrasonicData(sensorData) {
@@ -134,6 +134,6 @@ module.exports = {
 	GetVenues: getVenues,
 	GetBestVibes: getBestVibes,
 	GetNumberOfPeople: getNumberOfPeople
-}
+};
 
 init();

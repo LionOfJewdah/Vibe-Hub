@@ -22,4 +22,4 @@ module.exports = {
 	MyTime: MyTime,
 	asyncForEach,
 	image_regex
-}
+};

@@ -3,8 +3,6 @@
 // passes YOLO output to a receiver, usually the database
 'use strict';
 
-const fs = require('fs');
-const path = require('path');
 const readdir = require('readdir-enhanced');
 const child_process = require('child_process');
 const {

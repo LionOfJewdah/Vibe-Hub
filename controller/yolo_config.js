@@ -1,5 +1,5 @@
 // YOLO-specific config
-'use strict'
+'use strict';
 
 const path = require('path');
 const home_dir = require('os').homedir(),
