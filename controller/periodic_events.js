@@ -2,7 +2,6 @@
 const MyTime = require('./util').Time_HH_MM;
 const Detect = require('./detect');
 const fs = require('fs'), path = require('path');
-//const cron = require('node-schedule');
 const rimraf = require('rimraf');
 const readdir = require('readdir-enhanced');
 const { uploadDir } = require('../config');
@@ -20,8 +19,6 @@ class PeriodicEvents {
 			setInterval(deleteOldStuff, SecondsToMilliseconds(300));
 		}, SecondsToMilliseconds(6));
 
-		/*this.yoloJob = cron.scheduleJob("0 * * * * *",
-			this.DetectThisMinute.bind(this));*/
 	}
 
 	DetectThisMinute(scheduledTime) {
@@ -41,7 +38,6 @@ function IfDirectoryExistsDo(directory, callback) {
 	fs.stat(directory, (err) => {
 		if (err) {
 			if (err.errno == ENOENT) {
-				console.log(`directory ${directory} does not exist.`);
 				return;
 			}
 			throw err;
@@ -51,13 +47,11 @@ function IfDirectoryExistsDo(directory, callback) {
 }
 
 async function deleteOldFiles(dir, ageInSeconds = 600) {
-	console.log(`[${new Date()}]:`,
-		"Attempting to delete old files in", dir);
 	try {
 		const files = await readdir(dir);
 		files.forEach(deleteIfShould);
 	} catch (err) {
-		console.error("Old file cleanup error:", err, err.stack);
+		console.error("Old file cleanup error:", dir, err, err.stack);
 		throw err;
 	}
 
@@ -74,7 +68,6 @@ async function deleteOldFiles(dir, ageInSeconds = 600) {
 			if (expiration < now) {
 				return rimraf(path.join(dir, file), function(err) {
 					if (err) { return console.error(err); }
-					console.log('successfully deleted', file);
 				});
 			}
 		}

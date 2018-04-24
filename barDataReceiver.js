@@ -11,7 +11,7 @@ class BackEndListener {
 		this.routes = routes;
 		this.YOLO = Detect.Init(database.InsertCameraData.bind(database));
 		this.periodic_events = PeriodicEvents.start();
-		server.route(routes());
+		server.route(routes(database));
 	}
 }
 

@@ -83,6 +83,16 @@ function _InsertSoundData(sensorData) {
 
 }
 
+async function _setCapacity(venue_ID, capacity) {
+	try {
+		await Venue.where({venue_ID}).update({capacity});
+		return { venue_ID, capacity, updated: true };
+	} catch (err) {
+		console.log("Rejected because of:", err);
+		return { venue_ID, capacity, updated: false };
+	}
+}
+
 function ApplyCallback(obj, cb) {
 	if (Array.isArray(obj)) {
 		obj.forEach(cb);
@@ -133,7 +143,8 @@ module.exports = {
 	GetVenuesAndBestVibes: getVenuesAndBestVibes,
 	GetVenues: getVenues,
 	GetBestVibes: getBestVibes,
-	GetNumberOfPeople: getNumberOfPeople
+	GetNumberOfPeople: getNumberOfPeople,
+	SetCapacity: _setCapacity
 };
 
 init();

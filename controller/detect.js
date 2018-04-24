@@ -31,8 +31,7 @@ class YOLO {
 			{ cwd: resultDir }
 		);
 		this.yolo_process.stdout.on('data', (data) => {
-			const payload = JSON.parse(data);
-			this.dataCallback(payload);
+			this.processYoloData(data);
 		});
 		this.yolo_process.on('exit', OnYoloExit);
 	}
@@ -61,6 +60,17 @@ class YOLO {
 		} catch (err) {
 			console.error(err, err.stack);
 			return err;
+		}
+	}
+
+	async processYoloData(jsonData) {
+		try {
+			const payload = JSON.parse(jsonData);
+			await this.dataCallback(payload);
+			//console.log("Did not crash processing YOLO data")
+		} catch (err) {
+			console.error("Error in parsing JSON from YOLO:",
+				err, jsonData.toString());
 		}
 	}
 }
