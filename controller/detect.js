@@ -35,7 +35,6 @@ class YOLO {
 		});
 		const showMeOutput = (data) => { process.stdout.write(data); }
 		this.yolo_process.stderr.on('data', showMeOutput);
-		this.yolo_process.stdout.on('data', showMeOutput);
 		this.yolo_process.on('exit', OnYoloExit);
 	}
 

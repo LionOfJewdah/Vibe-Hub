@@ -49,8 +49,8 @@ function _InsertCameraData(sensorData) {
 		let cameraData = CameraData.create(sensorData, onCameraDataInsert);
 		ApplyCallback(sensorData, updateVenue);
 	} catch (err) {
-		console.error(`[${new Date()}]:`, "Camera data insert fail:",
-			err, err.stack);
+		/*console.error(`[${new Date()}]:`, "Camera data insert fail:",
+			err, err.stack);*/
 	}
 
 	function updateVenue(data) {
@@ -60,10 +60,10 @@ function _InsertCameraData(sensorData) {
 
 	function onCameraDataInsert(err) {
 		if (err) {
-			console.error(`[${new Date()}]:`, "Camera data insert fail:",
-				err, err.stack);
+			/*console.error(`[${new Date()}]:`, "Camera data insert fail:",
+				err, err.stack);*/
 		} else {
-			console.log(`[${new Date()}]:`, "Inserted camera data");
+			//console.log(`[${new Date()}]:`, "Inserted camera data");
 		}
 	}
 }
@@ -79,12 +79,12 @@ function _InsertSoundData(sensorData) {
 async function setVenuePopulation(venue_ID, numberOfPeople) {
 	try {
 		await Venue.where({venue_ID}).update({numberOfPeople});
-		console.log(`venue ${venue_ID} updated to`,
-			numberOfPeople, "people.");
+		/*console.log(`venue ${venue_ID} updated to`,
+			numberOfPeople, "people.");*/
 		return { venue_ID, numberOfPeople, updated: true };
 	} catch (err) {
-		console.error(`Error updating venue ${venue_ID} to`,
-			numberOfPeople, "people.");
+		/*onsole.error(`Error updating venue ${venue_ID} to`,
+			numberOfPeople, "people.");*/
 		return { venue_ID, numberOfPeople, updated: false };
 	}
 }
@@ -92,11 +92,11 @@ async function setVenuePopulation(venue_ID, numberOfPeople) {
 async function setVenueCapacity(venue_ID, capacity) {
 	try {
 		await Venue.where({venue_ID}).update({capacity});
-		console.log(`venue ${venue_ID} updated to capacity ${capacity}.`);
+		//console.log(`venue ${venue_ID} updated to capacity ${capacity}.`);
 		return { venue_ID, capacity, updated: true };
 	} catch (err) {
-		console.error(`Error updating venue ${venue_ID} to`,
-			`capacity ${capacity}.`);
+		/*console.error(`Error updating venue ${venue_ID} to`,
+			`capacity ${capacity}.`);*/
 		return { venue_ID, capacity, updated: false };
 	}
 }
